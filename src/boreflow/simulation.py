@@ -10,30 +10,34 @@ from .geometry import Geometry
 class Simulation:
     """
     A class to simulate a model using the Finite Volume Method (FVM).
+
+    Attributes:
+    -----------
+    bc : BCBase
+        Boundary conditions object applied at the first interface.
+    geometry: Geometry
+        The Geometry object of the domain.
+    t_end : float
+        Total simulation time (default: 10)
+    cfl : float
+        CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5)
+    max_dt : float
+        Maximum time step size (default: 0.01)
+    dx : float
+        Spatial grid resolution (default: 0.1)
     """
 
     # Default
     bc: BCBase
     geometry: Geometry
     t_end: float
-    min_dt: float
-    dx: float
     cfl: float
+    max_dt: float
+    dx: float
 
     def __init__(self, t_end: float = 10, cfl: float = 0.5, max_dt: float = 0.01, dx: float = 0.1) -> None:
         """
-        Initialize simulation time and spatial parameters.
-
-        Parameters:
-        ----------
-        t_end : float
-            Total simulation time (default: 10)
-        cfl : float
-            CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5)
-        max_dt : float
-            Maximum time step size (default: 0.01)
-        dx : float
-            Spatial grid resolution (default: 0.1)
+        Initialize simulation time and spatial parameters
         """
         self.t_end = t_end
         self.max_dt = max_dt
