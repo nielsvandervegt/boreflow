@@ -8,6 +8,15 @@ from .bc_base import BCBase
 class BCArray(BCBase):
     """
     Boundary condition based on pre-defined (t, h, u) arrays.
+
+    Attributes
+    ----------
+    t: np.ndarray
+        Time array
+    h: np.ndarray
+        Flow thickness array
+    u: np.ndarray
+        Flow velocity array
     """
 
     t: np.ndarray
@@ -17,15 +26,6 @@ class BCArray(BCBase):
     def __init__(self, t: np.ndarray, h: np.ndarray, u: np.ndarray) -> None:
         """
         Initialize the boundary condition.
-
-        Parameters
-        ----------
-        t: np.ndarray
-            Time array
-        h: np.ndarray
-            Flow thickness array
-        u: np.ndarray
-            Flow velocity array
         """
         mask = ~(np.isnan(h) | np.isnan(u) | (h < 0) | (u < 0))
         self.t = t[mask]

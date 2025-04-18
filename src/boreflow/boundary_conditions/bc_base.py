@@ -36,6 +36,23 @@ class BCBase(ABC):
 class BCBaseOvertopping(BCBase):
     """
     Base class for overtopping flow with an optimized shape coefficient based on the given volume
+
+    Attributes
+    ----------
+    volume : float
+        The to be simulated individual overtopping volume
+    u_peak : float
+        Peak flow velocity
+    h_peak : float
+        Peak flow thickness
+    t_ovt : float
+        The total time of the overtopping event
+    tru_tovt : float
+        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)
+    trh_tovt : float
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)
+    coef : float
+        Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
 
     volume: float

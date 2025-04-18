@@ -10,15 +10,6 @@ class BCWOS(BCBaseOvertopping):
     def __init__(self, volume: float, tru_tovt: float = 0.0, trh_tovt: float = 0.0) -> None:
         """
         Initialize the boundary condition.
-
-        Parameters
-        ----------
-        volume : float
-            Total overtopping volume [m³/m].
-        tru_tovt : float
-            Time ratio for velocity peak (default: 0.05).
-        trh_tovt : float
-            Time ratio for depth peak (default: 0.13).
         """
         # Calculate peak flow characteristics
         self.volume = volume

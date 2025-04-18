@@ -18,13 +18,13 @@ class Simulation:
     geometry: Geometry
         The Geometry object of the domain.
     t_end : float
-        Total simulation time (default: 10)
+        Total simulation time (default: 10s)
     cfl : float
         CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5)
     max_dt : float
-        Maximum time step size (default: 0.01)
+        Maximum time step size (default: 0.01s)
     dx : float
-        Spatial grid resolution (default: 0.1)
+        Spatial grid resolution (default: 0.1m)
     """
 
     # Default

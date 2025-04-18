@@ -10,24 +10,18 @@ class BCOvertopping(BCBaseOvertopping):
     Boundary condition for overtopping flow, based on empirical formulas
     from van der Meer et al. (2011), van Damme (2016), and Hughes et al. (2012),
     with uncertainty from van der Vegt et al. (2025).
+
+    Attributes
+    ----------
+    cota : float
+        Waterside slope of the dike (1:cota).
+    unc_ppf : float
+        Percent point function (quantile) for uncertainty (default: 0.5).
     """
 
     def __init__(self, volume, cota, tru_tovt: float = 0.05, trh_tovt: float = 0.13, unc_ppf: float = 0.5) -> None:
         """
         Initialize the boundary condition.
-
-        Parameters
-        ----------
-        volume : float
-            Total overtopping volume [m3/m].
-        cota : float
-            Waterside slope of the dike (1:cota).
-        tru_tovt : float
-            Time ratio for velocity peak (default: 0.05).
-        trh_tovt : float
-            Time ratio for depth peak (default: 0.13).
-        unc_ppf : float
-            Percent point function (quantile) for uncertainty (default: 0.5).
         """
         # Store base parameters
         self.volume = volume
