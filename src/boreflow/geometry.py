@@ -15,6 +15,8 @@ class Geometry:
     ----------
     geometry_x : np.ndarray
         Array of x-coordinates.
+    geometry_s : np.ndarray
+        Arrau of s-coordinates (distance along the geometry)
     geometry_z : np.ndarray
         Array of corresponding z-coordinates (elevation).
     geometry_n : np.ndarray
@@ -25,16 +27,16 @@ class Geometry:
         Flag whether the model is simulated
     simulation_time : float
         Time it took to simulate the model
-    boundary_condition : BC
+    boundary_condition : BCBase
         The boundary condition applied when simulated
     """
 
     geometry_x: np.ndarray
+    geometry_s: np.ndarray
     geometry_z: np.ndarray
     geometry_n: np.ndarray
-    geometry_s: np.ndarray
-    geometry_parts: list = []
-    simulated: bool = False
+    geometry_parts: list[GeometryPart]
+    simulated: bool
     simulation_time: float
     boundary_condition: BCBase
 
