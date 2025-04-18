@@ -161,8 +161,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#boreflow.Simulation" id="toc-boreflow.Simulation" class="nav-link active" data-scroll-target="#boreflow.Simulation">Simulation</a>
   <ul class="collapse">
-  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes:</a></li>
-  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1">Attributes</a></li>
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
   <li><a href="#boreflow.Simulation.run" id="toc-boreflow.Simulation.run" class="nav-link" data-scroll-target="#boreflow.Simulation.run">run</a></li>
@@ -182,42 +181,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Simulation(<span class="va">self</span>, t_end<span class="op">=</span><span class="dv">10</span>, cfl<span class="op">=</span><span class="fl">0.5</span>, max_dt<span class="op">=</span><span class="fl">0.01</span>, dx<span class="op">=</span><span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>A class to simulate a model using the Finite Volume Method (FVM).</p>
 <section id="attributes" class="level2 doc-section doc-section-attributes">
-<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes:</h2>
-<p>bc : BCBase Boundary conditions object applied at the first interface. geometry: Geometry The Geometry object of the domain. t_end : float Total simulation time (default: 10) cfl : float CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5) max_dt : float Maximum time step size (default: 0.01) dx : float Spatial grid resolution (default: 0.1)</p>
-</section>
-<section id="attributes-1" class="level2">
-<h2 class="anchored" data-anchor-id="attributes-1">Attributes</h2>
+<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 79%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#boreflow.simulation.Simulation.bc">bc</a></td>
-<td></td>
+<td>bc</td>
+<td>BCBase</td>
+<td>Boundary conditions object applied at the first interface.</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.simulation.Simulation.cfl">cfl</a></td>
-<td></td>
+<td>geometry</td>
+<td>Geometry</td>
+<td>The Geometry object of the domain.</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.simulation.Simulation.dx">dx</a></td>
-<td></td>
+<td>t_end</td>
+<td>float</td>
+<td>Total simulation time (default: 10)</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.simulation.Simulation.geometry">geometry</a></td>
-<td></td>
+<td>cfl</td>
+<td>float</td>
+<td>CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5)</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.simulation.Simulation.max_dt">max_dt</a></td>
-<td></td>
+<td>max_dt</td>
+<td>float</td>
+<td>Maximum time step size (default: 0.01)</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.simulation.Simulation.t_end">t_end</a></td>
-<td></td>
+<td>dx</td>
+<td>float</td>
+<td>Spatial grid resolution (default: 0.1)</td>
 </tr>
 </tbody>
 </table>

@@ -182,49 +182,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="boreflow.Geometry" class="level1">
 <h1>Geometry</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Geometry(<span class="va">self</span>, x, z, n_manning)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Geometry(<span class="va">self</span>, geometry_x, geometry_z, geometry_n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Represents a discretized 1D geometry composed of multiple connected geometry parts, each defined by a pair of x and z coordinates, and associated Manning roughness values.</p>
-<section id="attributes" class="level2">
-<h2 class="anchored" data-anchor-id="attributes">Attributes</h2>
+<section id="attributes" class="level2 doc-section doc-section-attributes">
+<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 19%">
+<col style="width: 62%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#boreflow.geometry.Geometry.boundary_condition">boundary_condition</a></td>
-<td></td>
+<td>geometry_x</td>
+<td>np.ndarray</td>
+<td>Array of x-coordinates.</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.geometry.Geometry.geometry_n">geometry_n</a></td>
-<td></td>
+<td>geometry_z</td>
+<td>np.ndarray</td>
+<td>Array of corresponding z-coordinates (elevation).</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.Geometry.geometry_parts">geometry_parts</a></td>
-<td>Built-in mutable sequence.</td>
+<td>geometry_n</td>
+<td>np.ndarray</td>
+<td>Array of Manning’s n values, one per segment (length = len(x) - 1).</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.geometry.Geometry.geometry_s">geometry_s</a></td>
-<td></td>
+<td>geometry_parts</td>
+<td>list[GeometryPart]</td>
+<td>List of all geometry parts (one part for each x[i] to x[i+1])</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.geometry.Geometry.geometry_x">geometry_x</a></td>
-<td></td>
+<td>simulated</td>
+<td>bool</td>
+<td>Flag whether the model is simulated</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.geometry.Geometry.geometry_z">geometry_z</a></td>
-<td></td>
+<td>simulation_time</td>
+<td>float</td>
+<td>Time it took to simulate the model</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.Geometry.simulated">simulated</a></td>
-<td>bool(x) -&gt; bool</td>
-</tr>
-<tr class="even">
-<td><a href="#boreflow.geometry.Geometry.simulation_time">simulation_time</a></td>
-<td></td>
+<td>boundary_condition</td>
+<td>BC</td>
+<td>The boundary condition applied when simulated</td>
 </tr>
 </tbody>
 </table>
@@ -263,7 +272,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="boreflow.Geometry.check_geometry" class="level3">
 <h3 class="anchored" data-anchor-id="boreflow.Geometry.check_geometry">check_geometry</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Geometry.check_geometry(x, z, n_manning)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Geometry.check_geometry(geometry_x, geometry_z, geometry_n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Validates the consistency of the geometry input arrays.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
@@ -278,19 +287,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>x</td>
+<td>geometry_x</td>
 <td>np.ndarray</td>
 <td>Array of x-coordinates.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td>z</td>
+<td>geometry_z</td>
 <td>np.ndarray</td>
 <td>Array of z-coordinates.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td>n_manning</td>
+<td>geometry_n</td>
 <td>np.ndarray</td>
 <td>Array of Manning’s n values.</td>
 <td><em>required</em></td>
