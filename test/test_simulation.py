@@ -7,7 +7,7 @@ def test_simulation():
     # Create simulation
     bc = BCWOS(2.0)
     geometry = Geometry([0, 2, 11], [3, 3, 0], [0.0175, 0.0175])
-    sim = Simulation(t_end=2.0, cfl=0.5, max_dt=0.01, dx=0.1)
+    sim = Simulation(t_end=10.0, cfl=0.5, max_dt=0.01, dx=0.1)
 
     # Run simulation and at results at s = 10m
     results = sim.run(geometry, bc, Solver.EF_LLF)
