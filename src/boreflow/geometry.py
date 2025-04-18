@@ -10,38 +10,46 @@ class Geometry:
     """
     Represents a discretized 1D geometry composed of multiple connected geometry parts,
     each defined by a pair of x and z coordinates, and associated Manning roughness values.
+
+    Attributes
+    ----------
+    geometry_x : np.ndarray
+        Array of x-coordinates.
+    geometry_z : np.ndarray
+        Array of corresponding z-coordinates (elevation).
+    geometry_n : np.ndarray
+        Array of Manning's n values, one per segment (length = len(x) - 1).
+    geometry_parts : list[GeometryPart]
+        List of all geometry parts (one part for each x[i] to x[i+1])
+    simulated : bool
+        Flag whether the model is simulated
+    simulation_time : float
+        Time it took to simulate the model
+    boundary_condition : BC
+        The boundary condition applied when simulated
     """
 
-    geometry_x: list
-    geometry_z: list
-    geometry_n: list
-    geometry_s: list
+    geometry_x: np.ndarray
+    geometry_z: np.ndarray
+    geometry_n: np.ndarray
+    geometry_s: np.ndarray
     geometry_parts: list = []
     simulated: bool = False
     simulation_time: float
     boundary_condition: BCBase
 
-    def __init__(self, x: np.ndarray, z: np.ndarray, n_manning: np.ndarray) -> None:
+    def __init__(self, geometry_x: np.ndarray, geometry_z: np.ndarray, geometry_n: np.ndarray) -> None:
         """
         Initialize a new Geometry object by discretizing the input profile.
-
-        Parameters
-        ----------
-        x : np.ndarray
-            Array of x-coordinates.
-        z : np.ndarray
-            Array of corresponding z-coordinates (elevation).
-        n_manning : np.ndarray
-            Array of Manning's n values, one per segment (length = len(x) - 1).
         """
         # Init
         self.__iteration_index = 0
 
         # Check and save the input
-        self.check_geometry(x, z, n_manning)
-        self.geometry_x = np.array(x)
-        self.geometry_z = np.array(z)
-        self.geometry_n = np.array(n_manning)
+        self.check_geometry(geometry_x, geometry_z, geometry_n)
+        self.geometry_x = np.array(geometry_x)
+        self.geometry_z = np.array(geometry_z)
+        self.geometry_n = np.array(geometry_n)
         self.geometry_s = np.concatenate(
             ([self.geometry_x[0]], np.sqrt((self.geometry_x[1:] - self.geometry_x[:-1]) ** 2 + (self.geometry_z[1:] - self.geometry_z[:-1]) ** 2))
         )
@@ -49,8 +57,8 @@ class Geometry:
 
         # Init the geometry parts
         self.geometry_parts = []
-        for i in range(len(x) - 1):
-            self.geometry_parts.append(GeometryPart(i + 1, x[i : i + 2], z[i : i + 2], n_manning[i]))
+        for i in range(len(geometry_x) - 1):
+            self.geometry_parts.append(GeometryPart(i + 1, geometry_x[i : i + 2], geometry_z[i : i + 2], geometry_n[i]))
 
     def __len__(self) -> int:
         """
@@ -86,25 +94,25 @@ class Geometry:
             self.__iteration_index = 0
             raise StopIteration
 
-    def check_geometry(self, x: np.ndarray, z: np.ndarray, n_manning: np.ndarray):
+    def check_geometry(self, geometry_x: np.ndarray, geometry_z: np.ndarray, geometry_n: np.ndarray):
         """
         Validates the consistency of the geometry input arrays.
 
         Parameters
         ----------
-        x : np.ndarray
+        geometry_x : np.ndarray
             Array of x-coordinates.
-        z : np.ndarray
+        geometry_z : np.ndarray
             Array of z-coordinates.
-        n_manning : np.ndarray
+        geometry_n : np.ndarray
             Array of Manning's n values.
         """
         # x and z should be of equal length
-        if len(x) != len(z):
+        if len(geometry_x) != len(geometry_z):
             raise ValueError("Arrays x and z should be of equal length.")
 
         # n_manning should be equal to x/z minus 1
-        if len(n_manning) != (len(x) - 1):
+        if len(geometry_n) != (len(geometry_x) - 1):
             raise ValueError("Array n_manning should be equal to the length of x minus 1.")
 
     def get_xt(self, x: float, get_h_perpendicular: bool = True) -> Union[np.ndarray, None]:

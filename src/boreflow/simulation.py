@@ -11,8 +11,8 @@ class Simulation:
     """
     A class to simulate a model using the Finite Volume Method (FVM).
 
-    Attributes:
-    -----------
+    Attributes
+    ----------
     bc : BCBase
         Boundary conditions object applied at the first interface.
     geometry: Geometry
