@@ -1,0 +1,52 @@
+import numpy as np
+
+from typing import Union
+
+from .bc_base import BCBase
+
+
+class BCArray(BCBase):
+    """
+    Boundary condition based on pre-defined (t, h, u) arrays.
+    """
+
+    t: np.ndarray
+    h: np.ndarray
+    u: np.ndarray
+
+    def __init__(self, t: np.ndarray, h: np.ndarray, u: np.ndarray) -> None:
+        """
+        Initialize the boundary condition.
+
+        Parameters
+        ----------
+        t: np.ndarray
+            Time array
+        h: np.ndarray
+            Flow thickness array
+        u: np.ndarray
+            Flow velocity array
+        """
+        mask = ~(np.isnan(h) | np.isnan(u) | (h < 0) | (u < 0))
+        self.t = t[mask]
+        self.h = h[mask]
+        self.u = u[mask]
+
+    def get_flow(self, t: Union[float, np.ndarray]) -> np.ndarray:
+        """
+        Compute (h, u) for time t.
+
+        Parameters
+        ----------
+        t: Union[float, np.ndarray]
+            Time as a float or array
+
+        Returns
+        -------
+        np.ndarray
+            2D array with (h, u) for t
+        """
+        t = np.array([t]) if isinstance(t, float) else np.array(t)
+        _h = np.interp(t, self.t, self.h)
+        _u = np.interp(t, self.t, self.u)
+        return np.array([_h, _u])

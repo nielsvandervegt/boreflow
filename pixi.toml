@@ -1,7 +1,7 @@
 [project]
-name = "Python_package_template"
+name = "boreflow"
 version = "0.0.1"
-description = "Python package template"
+description = "Python package to simulate the flow of overtopping and bores."
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64"]
 readme = "README.md"
@@ -15,7 +15,7 @@ install = "pre-commit install"
 # Docs
 quartodoc-build = { cmd = "quartodoc build && rm objects.json", cwd = "docs" ,inputs = [
     "docs/_quarto.yml",
-    "src/Python_package_template",
+    "src/boreflow",
     ],outputs = [
     "docs/reference/"
     ]}
@@ -38,6 +38,7 @@ matplotlib ="*"
 nbclient ="*"
 nbformat ="*"
 numpy ="*"
+scipy ="*"
 openpyxl = "*"
 pandas ="*"
 pre-commit = "*"
@@ -49,7 +50,7 @@ ruff = ">=0.8.1"
 tqdm = "*"
 
 [feature.common.pypi-dependencies]
-python_package_template = { path = "src", editable = true }
+boreflow = { path = "src", editable = true }
 
 [environments]
 default = { features = ["common"] }

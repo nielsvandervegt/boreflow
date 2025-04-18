@@ -2,17 +2,14 @@
 ---
 authors:
   -
-    affiliation: "HKV lijn in water"
-    family-names: Dupuits
-    given-names: Guy
-  -
-    affiliation: "HKV lijn in water"
-    family-names: Haasnoot
-    given-names: David
+    affiliation: "University of Twente, HKV lijn in water"
+    family-names: Van der Vegt
+    given-names: Niels
 
 cff-version: "0.0.1"
 keywords:
-  - Waterveiligheid
+  - Numerical modelling
+  - Wave overtopping
 license: "GPL-3.0-or-later"
 message: "If you use this software, please cite it using these metadata."
-title: python_package_template
+title: boreflow
