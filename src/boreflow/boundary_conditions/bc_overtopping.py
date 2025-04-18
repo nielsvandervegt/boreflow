@@ -15,7 +15,7 @@ class BCOvertopping(BCBaseOvertopping):
     def __init__(self, volume, cota, tru_tovt: float = 0.05, trh_tovt: float = 0.13, unc_ppf: float = 0.5) -> None:
         """
         Initialize the boundary condition.
-        
+
         Parameters
         ----------
         volume : float
@@ -41,7 +41,7 @@ class BCOvertopping(BCBaseOvertopping):
 
         # Geometry and relation between V and Ru - Rc (van Damme, 2016)
         alpha = np.arctan(1 / cota)
-        RuRc = np.sqrt(2 * np.sin(alpha)**2 * volume / (np.cos(alpha) * 0.055))
+        RuRc = np.sqrt(2 * np.sin(alpha) ** 2 * volume / (np.cos(alpha) * 0.055))
 
         # Peak flow values (van der Meer, 2011; EurOtop, 2018)
         cu = np.interp(cota, [3, 6], [1.4, 1.5])
@@ -50,7 +50,7 @@ class BCOvertopping(BCBaseOvertopping):
         self.h_peak = ch * RuRc * np.exp(qh)
 
         # Overtopping time (Hughes et al., 2012)
-        self.t_ovt = 4.0 * volume ** 0.41
+        self.t_ovt = 4.0 * volume**0.41
 
         # Fit flow shape (Hughes et al., 2012)
         self.coef = self.optimize_flow()

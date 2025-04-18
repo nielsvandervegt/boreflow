@@ -7,7 +7,7 @@ from .finite_volume_method import FVM
 from .geometry import Geometry
 
 
-class Simulation():
+class Simulation:
     """
     A class to simulate a model using the Finite Volume Method (FVM).
     """
@@ -43,9 +43,9 @@ class Simulation():
     def run(self, geometry: Geometry, bc: BCBase, solver: Solver = Solver.EF_LLF) -> Geometry:
         """
         Run the simulation using the provided geometry, boundary conditions, and solver.
-        
+
         The simulation involves discretizing the geometry, applying the Finite Volume Method (FVM),
-        and computing the wetting front velocity for each geometry part. The simulation runs until 
+        and computing the wetting front velocity for each geometry part. The simulation runs until
         the end time is reached or the conditions specified by the solver are satisfied.
 
         Parameters
@@ -56,7 +56,7 @@ class Simulation():
             Boundary conditions for the simulation.
         solver : Solver, optional
             The solver to use for the simulation. The default is `Solver.EF_LLF` (Euler Forward with Local Lax-Friedrichs).
-        
+
         Returns
         -------
         Geometry
@@ -76,7 +76,7 @@ class Simulation():
 
         # Run for each geometry part
         for i, _geometrypart in enumerate(geometry):
-            _bc = bc if i==0 else geometry.geometry_parts[i-1]
+            _bc = bc if i == 0 else geometry.geometry_parts[i - 1]
             FVM.run_fvm(_geometrypart, _bc, solver, self.t_end, self.cfl, self.max_dt, self.dx)
             _geometrypart.derive_front_velocity()
 

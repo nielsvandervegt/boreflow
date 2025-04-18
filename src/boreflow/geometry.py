@@ -6,12 +6,12 @@ from .boundary_conditions.bc_base import BCBase
 from .geometry_part import GeometryPart
 
 
-class Geometry():
+class Geometry:
     """
     Represents a discretized 1D geometry composed of multiple connected geometry parts,
     each defined by a pair of x and z coordinates, and associated Manning roughness values.
     """
-    
+
     geometry_x: list
     geometry_z: list
     geometry_n: list
@@ -42,14 +42,16 @@ class Geometry():
         self.geometry_x = np.array(x)
         self.geometry_z = np.array(z)
         self.geometry_n = np.array(n_manning)
-        self.geometry_s = np.concatenate(([self.geometry_x[0]], np.sqrt((self.geometry_x[1:] - self.geometry_x[:-1])**2 + (self.geometry_z[1:] - self.geometry_z[:-1])**2)))
+        self.geometry_s = np.concatenate(
+            ([self.geometry_x[0]], np.sqrt((self.geometry_x[1:] - self.geometry_x[:-1]) ** 2 + (self.geometry_z[1:] - self.geometry_z[:-1]) ** 2))
+        )
         self.geometry_s = np.cumsum(self.geometry_s)
 
         # Init the geometry parts
         self.geometry_parts = []
         for i in range(len(x) - 1):
-            self.geometry_parts.append(GeometryPart(i+1, x[i:i+2], z[i:i+2], n_manning[i]))
-    
+            self.geometry_parts.append(GeometryPart(i + 1, x[i : i + 2], z[i : i + 2], n_manning[i]))
+
     def __len__(self) -> int:
         """
         Returns the number of geometry parts.
@@ -83,7 +85,7 @@ class Geometry():
         else:
             self.__iteration_index = 0
             raise StopIteration
-    
+
     def check_geometry(self, x: np.ndarray, z: np.ndarray, n_manning: np.ndarray):
         """
         Validates the consistency of the geometry input arrays.
@@ -100,7 +102,7 @@ class Geometry():
         # x and z should be of equal length
         if len(x) != len(z):
             raise ValueError("Arrays x and z should be of equal length.")
-        
+
         # n_manning should be equal to x/z minus 1
         if len(n_manning) != (len(x) - 1):
             raise ValueError("Array n_manning should be equal to the length of x minus 1.")
@@ -124,21 +126,21 @@ class Geometry():
         # Check if model is simulated
         if not self.simulated:
             raise ValueError("Model not simulated")
-        
+
         # Search the right geometry part
         _data = None
         for _geometry_part in self:
             _data = _geometry_part.get_xt(x, get_h_perpendicular)
             if _data is not None:
                 break
-        
+
         # Error if no geometrypart can be identified (outside the grid or between two SSSWE)
         if _data is None:
             print(f"Cannot get data for x={x}. Is the location outside the grid or around between two SSSWE boundaries?")
-        
+
         # Return data
         return _data
-    
+
     def get_st(self, s: float, get_h_perpendicular: bool = True) -> Union[np.ndarray, None]:
         """
         Get the time series of flow variables at a specific s-location along the slope.
@@ -169,7 +171,7 @@ class Geometry():
         ----------
         get_h_perpendicular : bool
             Whether to compute the perpendicular flow thickness (default is True).
-        
+
         Returns:
         -------
         np.ndarray
@@ -178,7 +180,7 @@ class Geometry():
         # Check if this geometry part is simulated
         if not self.simulated:
             raise ValueError("Model not simulated")
-        
+
         # Initialize empty lists for storing the results
         _x = np.array([])
         _hpeak = np.array([])
@@ -187,14 +189,13 @@ class Geometry():
 
         # Loop over geometry parts and collect data
         for geometry_part in self:
-            
             # Add the x-coordinates and front velocities
             _x = np.concatenate((_x, geometry_part.x))
             _ufront = np.concatenate((_ufront, geometry_part.u_front))
-            
+
             # Choose the height array (perpendicular or horizontal)
             _h = geometry_part.h_s if get_h_perpendicular else geometry_part.h_x
-            
+
             # Get the peak height and velocity
             _hpeak = np.concatenate((_hpeak, np.max(_h, axis=0)))
             _upeak = np.concatenate((_upeak, np.max(geometry_part.u, axis=0)))
@@ -209,7 +210,7 @@ class Geometry():
         ----------
         get_h_perpendicular : bool
             Whether to compute the perpendicular flow thickness (default is True).
-        
+
         Returns:
         -------
         np.ndarray
@@ -217,7 +218,7 @@ class Geometry():
         """
         # Get flow
         _x, _hpeak, _upeak, _ufront = self.get_peak_flow_x(get_h_perpendicular)
-        
+
         # Transform s into x
         _s = np.interp(_x, self.geometry_x, self.geometry_s)
 

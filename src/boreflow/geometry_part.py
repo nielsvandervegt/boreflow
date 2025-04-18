@@ -70,11 +70,11 @@ class GeometryPart:
         # Check if x and z consists of two values, e.g. [xstart, xend]
         if len(x) != 2 or len(z) != 2:
             raise ValueError("Length of x, z, or both is not equal to 2.")
-        
+
         # Check if the roughness is a float (Mannings coefficient)
         if not isinstance(n_manning, float):
             raise ValueError("Roughness n (Mannings coefficent) should be a float.")
-    
+
     def init_simulation(self, dx: float) -> None:
         """
         Initialize the simulation for this geometry part by discretizing the x-coordinate.
@@ -85,7 +85,7 @@ class GeometryPart:
             The spacing between discretized x-coordinates.
         """
         # Discretise
-        self.x = np.arange(self.geometry_x[0] + dx/2, self.geometry_x[1], dx)
+        self.x = np.arange(self.geometry_x[0] + dx / 2, self.geometry_x[1], dx)
         self.s = (self.x - self.geometry_x[0]) / np.cos(self.geometry_alpha) + self.geometry_x[0]
 
         # Initial conditions
@@ -97,7 +97,7 @@ class GeometryPart:
         # Wavefront
         self.t_front = np.empty((len(self.x)))
         self.u_front = np.empty((len(self.x)))
-    
+
     def get_xt(self, x: float, get_h_perpendicular: bool = True) -> np.ndarray:
         """
         Return the time series at a specific location x.
@@ -130,17 +130,21 @@ class GeometryPart:
         # Interpolate
         _u = np.array(self.u[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.u[:, idx_upper] - self.u[:, idx_lower]))
         if get_h_perpendicular:
-            _h = np.array(self.h_s[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h_s[:, idx_upper] - self.h_s[:, idx_lower]))
+            _h = np.array(
+                self.h_s[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h_s[:, idx_upper] - self.h_s[:, idx_lower])
+            )
         else:
-            _h = np.array(self.h_x[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h_x[:, idx_upper] - self.h_x[:, idx_lower]))
+            _h = np.array(
+                self.h_x[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h_x[:, idx_upper] - self.h_x[:, idx_lower])
+            )
 
         return np.array([self.t, _h, _u])
-    
+
     def derive_front_velocity(self, threshold: float = 0.01) -> None:
         """
         Derive the time and velocity of the wetting front for this geometry part.
 
-        The wetting front is considered as the point where the water depth exceeds a given threshold. 
+        The wetting front is considered as the point where the water depth exceeds a given threshold.
         The time of passing (t_front) is calculated based on linear interpolation.
         The velocity (u_front) of the wetting front is calculated based on second-order differences.
 
@@ -153,10 +157,10 @@ class GeometryPart:
         for j, _h in enumerate(self.h_s.T):
             idx = np.where(_h > threshold)[0]
             if len(idx) > 0:
-                self.t_front[j] = np.interp(0.01, _h[idx[0]-1:idx[0]+1], self.t[idx[0]-1:idx[0]+1])
+                self.t_front[j] = np.interp(0.01, _h[idx[0] - 1 : idx[0] + 1], self.t[idx[0] - 1 : idx[0] + 1])
             else:
                 self.t_front[j] = None
-        
+
         # Determine the velocity of the wetting front (u_front) using second-order differences
         dx = self.x[1] - self.x[0]
         for j in range(len(self.t_front)):

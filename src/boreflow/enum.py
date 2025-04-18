@@ -14,5 +14,6 @@ class Solver(Enum):
     RK4_LLF
         Runge-Kutta 4th order with Local Lax-Friedrichs flux.
     """
+
     EF_LLF = 0
     RK4_LLF = 1

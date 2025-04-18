@@ -8,17 +8,20 @@ from .enum import Solver
 from .geometry_part import GeometryPart
 
 
-class FVM():
+class FVM:
     """
     A class implementing the Finite Volume Method (FVM) for solving one-dimensional Shallow Water Equations (Maranzoni and Tomirotti, 2022).
 
     The FVM is used for time integration (Euler Forward, Runge-Kutta 4) and flux calculation (local Lax-Friedrichs).
     """
+
     # Parameters
     g = 9.81
 
     @staticmethod
-    def run_fvm(geometry_part: GeometryPart, boundary_condition: Union[BCBase, GeometryPart], solver: Solver, t_end: float, cfl: float, max_dt: float, dx: float):
+    def run_fvm(
+        geometry_part: GeometryPart, boundary_condition: Union[BCBase, GeometryPart], solver: Solver, t_end: float, cfl: float, max_dt: float, dx: float
+    ):
         """
         Solve the one-dimensional Shallow Water Equations using a Finite Volume Method.
 
@@ -42,16 +45,15 @@ class FVM():
             Spatial resolution of the computational grid.
         """
         # Progress bar
-        pbar = tqdm(total=t_end, desc=f"Part #{geometry_part.id}", bar_format='{l_bar}{bar}| Simulated: {n:.2f}/{total:.2f} sec')
+        pbar = tqdm(total=t_end, desc=f"Part #{geometry_part.id}", bar_format="{l_bar}{bar}| Simulated: {n:.2f}/{total:.2f} sec")
 
         # Initial conditions
         geometry_part.init_simulation(dx)
         U = np.zeros((2, len(geometry_part.x)))
-        
+
         # Finite volume
         t = 0.0
         while t < t_end:
-
             # Determine timestep, use as maximum 'max_dt'
             max_speed = np.maximum(FVM.max_wave_speed(U), 1e-8)
             dt = np.min([cfl * dx / max_speed, max_dt])
@@ -59,7 +61,7 @@ class FVM():
                 dt = t_end - t
             if t == 0.0:
                 dt = 1e-6
-            
+
             # Update cells
             if solver == Solver.EF_LLF:
                 U = FVM.euler_step(U, t, dt, dx, geometry_part, boundary_condition)
@@ -76,10 +78,10 @@ class FVM():
 
             # Update progress bar
             pbar.update(dt if t <= t_end else t_end - (t - dt))
-                
+
             # Increase timestep
             t += dt
-        
+
         # Determine the flow thickness perpendicular to the slope
         geometry_part.h_s = geometry_part.h_x * np.cos(geometry_part.geometry_alpha)
 
@@ -88,7 +90,7 @@ class FVM():
 
         # Close the progress bar
         pbar.close()
-    
+
     @staticmethod
     def euler_step(U, t, dt, dx, geometry_part, boundary_condition) -> np.ndarray:
         """
@@ -108,7 +110,7 @@ class FVM():
             The part of the domain being simulated.
         boundary_condition : Union[BCBase, GeometryPart]
             Boundary condition or upstream geometry part.
-        
+
         Returns
         -------
         np.ndarray
@@ -116,7 +118,7 @@ class FVM():
         """
         rhs = FVM.compute_rhs(U, t, dx, geometry_part, boundary_condition)
         return U + dt * rhs
-    
+
     @staticmethod
     def rk4_step(U, t, dt, dx, geometry_part, boundary_condition) -> np.ndarray:
         """
@@ -136,7 +138,7 @@ class FVM():
             The part of the domain being simulated.
         boundary_condition : Union[BCBase, GeometryPart]
             Boundary condition or upstream geometry part.
-        
+
         Returns
         -------
         np.ndarray
@@ -146,7 +148,7 @@ class FVM():
         k2 = FVM.compute_rhs(U + 0.5 * dt * k1, t, dx, geometry_part, boundary_condition)
         k3 = FVM.compute_rhs(U + 0.5 * dt * k2, t, dx, geometry_part, boundary_condition)
         k4 = FVM.compute_rhs(U + dt * k3, t, dx, geometry_part, boundary_condition)
-        return U + (dt / 6.0) * (k1 + 2*k2 + 2*k3 + k4)
+        return U + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
 
     @staticmethod
     def compute_rhs(U, t, dx, geometry_part: GeometryPart, bc: Union[BCBase, GeometryPart]) -> np.ndarray:
@@ -170,7 +172,7 @@ class FVM():
             The specific geometry being simulated, which includes grid information, slope angle, and roughness.
         bc : Union[BCBase, GeometryPart]
             The boundary condition object or the upstream geometry part providing boundary conditions.
-        
+
         Returns
         -------
         np.ndarray
@@ -179,33 +181,33 @@ class FVM():
         """
         # Compute fluxes
         Nx = U.shape[1]
-        F_interface = np.zeros((2, Nx+1))
-        for i in range(Nx+1):
+        F_interface = np.zeros((2, Nx + 1))
+        for i in range(Nx + 1):
             if i == 0:
                 UL = np.array(FVM.boundary_conditions(t, geometry_part, bc))
                 UR = U[:, 0]
             elif i == Nx:
-                UL = U[:, Nx-1]
-                UR = U[:, Nx-1]
+                UL = U[:, Nx - 1]
+                UR = U[:, Nx - 1]
             else:
-                UL = U[:, i-1]
+                UL = U[:, i - 1]
                 UR = U[:, i]
             F_interface[:, i] = FVM.rusanov_flux(UL, UR, geometry_part.geometry_alpha)
-        
+
         S = FVM.compute_source_friction(U, geometry_part)
-        
+
         # Compute the spatial operator
         rhs = np.zeros_like(U)
         for i in range(Nx):
-            rhs[:, i] = - (F_interface[:, i+1] - F_interface[:, i]) / dx + S[:, i]
-        
+            rhs[:, i] = -(F_interface[:, i + 1] - F_interface[:, i]) / dx + S[:, i]
+
         # Return the right hand side
         return rhs
 
     @staticmethod
     def boundary_conditions(t: float, geometry_part: GeometryPart, bc: Union[BCBase, GeometryPart]):
         """
-        Return the boundary condition at the upstream interface. The boundary condition can be derived 
+        Return the boundary condition at the upstream interface. The boundary condition can be derived
         from either a Boundary Condition (BCBase) object or from the downstream interface of the upstream GeometryPart.
 
         Parameters
@@ -258,7 +260,7 @@ class FVM():
         h = U_vec[0]
         u = U_vec[1] / h if h > 1e-6 else 0.0
         F0 = u * h * np.cos(alpha)
-        F1 = (u**2 * h + 0.5 * FVM.g * h**2 * (np.cos(alpha)**2)) * np.cos(alpha)
+        F1 = (u**2 * h + 0.5 * FVM.g * h**2 * (np.cos(alpha) ** 2)) * np.cos(alpha)
         return np.array([F0, F1])
 
     @staticmethod
@@ -285,14 +287,14 @@ class FVM():
         """
         FL = FVM.flux_state(UL, alpha)
         FR = FVM.flux_state(UR, alpha)
-        
+
         # Estimate wave speeds for left and right states:
         uL = UL[1] / UL[0] if UL[0] > 1e-6 else 0.0
         uR = UR[1] / UR[0] if UR[0] > 1e-6 else 0.0
         cL = np.sqrt(FVM.g * UL[0])
         cR = np.sqrt(FVM.g * UR[0])
         smax = max(abs(uL) + cL, abs(uR) + cR)
-        
+
         return 0.5 * (FL + FR) - 0.5 * smax * (UR - UL)
 
     @staticmethod
@@ -321,14 +323,20 @@ class FVM():
         """
         S = np.zeros_like(U)
         h = U[0, :]
-        
+
         # Avoid division by zero by setting u to 0 when h is below the threshold
         u = U[1, :] / np.maximum(h, h_threshold)
-        
+
         # Ensure the friction term does not cause overflow by limiting h and using np.maximum
-        ft = FVM.g * h * (geometry_part.geometry_n**2 * u**2) / (np.maximum(h**(4/3), h_threshold**(4/3))) * np.sqrt(1 + np.tan(geometry_part.geometry_alpha)**2)
+        ft = (
+            FVM.g
+            * h
+            * (geometry_part.geometry_n**2 * u**2)
+            / (np.maximum(h ** (4 / 3), h_threshold ** (4 / 3)))
+            * np.sqrt(1 + np.tan(geometry_part.geometry_alpha) ** 2)
+        )
         friction_term = np.where(h > h_threshold, ft, 0.0)
-        
+
         # Update source term
         S[1, :] = FVM.g * h * np.sin(geometry_part.geometry_alpha) - friction_term
         return S
