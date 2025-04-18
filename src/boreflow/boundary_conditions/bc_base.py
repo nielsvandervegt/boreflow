@@ -59,6 +59,7 @@ class BCBaseOvertopping(BCBase):
         float
             The optimized coefficient
         """
+
         def optimize_volume(_coef):
             _t = np.arange(0, self.t_ovt, 0.001)
             h, u = self.get_flow(_t, _coef)
@@ -78,7 +79,7 @@ class BCBaseOvertopping(BCBase):
             Time as a float or array
         coef: float, optional
             Coefficient, if None use the coefficient determined by the optimize_flow function (default: None)
-        
+
         Returns
         -------
         np.ndarray
@@ -88,11 +89,13 @@ class BCBaseOvertopping(BCBase):
         _coef = self.coef if coef is None else coef
 
         # Flow thickness
-        _h = np.interp(t, [0, self.trh_tovt * self.t_ovt, self.t_ovt], [0, 1, 0]) ** _coef * self.h_peak
-        _h[t < self.trh_tovt * self.t_ovt] = t[t < self.trh_tovt * self.t_ovt] * self.h_peak / (self.trh_tovt * self.t_ovt)
+        tpeak = self.trh_tovt * self.t_ovt
+        _h = np.interp(t, [0, tpeak, self.t_ovt], [0, 1, 0]) ** _coef * self.h_peak
+        _h[t < tpeak] = t[t < tpeak] * self.h_peak / tpeak
 
         # Flow velocity
-        _u = np.interp(t, [0, self.tru_tovt * self.t_ovt, self.t_ovt], [0, 1, 0]) ** _coef * self.u_peak
-        _u[t < self.tru_tovt * self.t_ovt] = t[t < self.tru_tovt * self.t_ovt] * self.u_peak / (self.tru_tovt * self.t_ovt)
+        tpeak = self.tru_tovt * self.t_ovt
+        _u = np.interp(t, [0, tpeak, self.t_ovt], [0, 1, 0]) ** _coef * self.u_peak
+        _u[t < tpeak] = t[t < tpeak] * self.u_peak / tpeak
 
         return np.array([_h, _u])

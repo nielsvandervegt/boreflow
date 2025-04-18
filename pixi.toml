@@ -54,3 +54,6 @@ boreflow = { path = "src", editable = true }
 
 [environments]
 default = { features = ["common"] }
+
+[tool.ruff]
+line-length = 120
