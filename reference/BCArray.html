@@ -180,27 +180,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>BCArray</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>BCArray(<span class="va">self</span>, t, h, u)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Boundary condition based on pre-defined (t, h, u) arrays.</p>
-<section id="attributes" class="level2">
-<h2 class="anchored" data-anchor-id="attributes">Attributes</h2>
+<section id="attributes" class="level2 doc-section doc-section-attributes">
+<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Name</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#boreflow.boundary_conditions.bc_array.BCArray.h">h</a></td>
-<td></td>
+<td>t</td>
+<td>np.ndarray</td>
+<td>Time array</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.boundary_conditions.bc_array.BCArray.t">t</a></td>
-<td></td>
+<td>h</td>
+<td>np.ndarray</td>
+<td>Flow thickness array</td>
 </tr>
 <tr class="odd">
-<td><a href="#boreflow.boundary_conditions.bc_array.BCArray.u">u</a></td>
-<td></td>
+<td>u</td>
+<td>np.ndarray</td>
+<td>Flow velocity array</td>
 </tr>
 </tbody>
 </table>

@@ -181,43 +181,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>BCOvertopping</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>BCOvertopping(<span class="va">self</span>, volume, cota, tru_tovt<span class="op">=</span><span class="fl">0.05</span>, trh_tovt<span class="op">=</span><span class="fl">0.13</span>, unc_ppf<span class="op">=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Boundary condition for overtopping flow, based on empirical formulas from van der Meer et al.&nbsp;(2011), van Damme (2016), and Hughes et al.&nbsp;(2012), with uncertainty from van der Vegt et al.&nbsp;(2025).</p>
-<section id="attributes" class="level2">
-<h2 class="anchored" data-anchor-id="attributes">Attributes</h2>
+<section id="attributes" class="level2 doc-section doc-section-attributes">
+<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 79%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
+<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#boreflow.boundary_conditions.bc_overtopping.BCOvertopping.coef">coef</a></td>
-<td></td>
+<td>cota</td>
+<td>float</td>
+<td>Waterside slope of the dike (1:cota).</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.boundary_conditions.bc_overtopping.BCOvertopping.h_peak">h_peak</a></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><a href="#boreflow.boundary_conditions.bc_overtopping.BCOvertopping.t_ovt">t_ovt</a></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><a href="#boreflow.BCOvertopping.trh_tovt">trh_tovt</a></td>
-<td>Convert a string or number to a floating-point number, if possible.</td>
-</tr>
-<tr class="odd">
-<td><a href="#boreflow.BCOvertopping.tru_tovt">tru_tovt</a></td>
-<td>Convert a string or number to a floating-point number, if possible.</td>
-</tr>
-<tr class="even">
-<td><a href="#boreflow.boundary_conditions.bc_overtopping.BCOvertopping.u_peak">u_peak</a></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><a href="#boreflow.boundary_conditions.bc_overtopping.BCOvertopping.volume">volume</a></td>
-<td></td>
+<td>unc_ppf</td>
+<td>float</td>
+<td>Percent point function (quantile) for uncertainty (default: 0.5).</td>
 </tr>
 </tbody>
 </table>
