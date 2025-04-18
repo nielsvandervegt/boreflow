@@ -21,7 +21,7 @@ u = np.array([1.0, 2.0, 0])
 bc = BCArray(t, h, u)
 
 # 3) Initialize simulation settings
-sim = Simulation(t_end=2.0, cfl=0.5, max_dt=0.01, dx=0.1)
+sim = Simulation(t_end=10.0, cfl=0.5, max_dt=0.01, dx=0.1)
 
 # 4) Run the simulation
 results = sim.run(geometry, bc, Solver.EF_LLF)
