@@ -7,7 +7,7 @@ website:
     left:
       - text: "Examples"
         menu:
-          - examples/notebooks/introduction.ipynb
+          - examples/notebooks/basic_example.ipynb
       - text: "Python API"
         file: reference/index.qmd
     right:

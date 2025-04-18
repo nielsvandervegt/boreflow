@@ -24,8 +24,8 @@ class BCWOS(BCBaseOvertopping):
         self.volume = volume
         self.tru_tovt = tru_tovt
         self.trh_tovt = trh_tovt
-        self.u_peak = 5.0 * volume**0.34  # 4.22 * volume ** 0.26
-        self.h_peak = 0.133 * volume**0.5  # 0.16 * volume ** 0.49
+        self.u_peak = 5.0 * volume**0.34
+        self.h_peak = 0.133 * volume**0.5
         self.t_ovt = 4.4 * volume**0.3
 
         # Optimize flow
