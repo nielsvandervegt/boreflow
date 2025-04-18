@@ -185,9 +185,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 10%">
 <col style="width: 9%">
-<col style="width: 79%">
+<col style="width: 7%">
+<col style="width: 82%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -198,14 +198,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
+<td>volume</td>
+<td>float</td>
+<td>The to be simulated individual overtopping volume</td>
+</tr>
+<tr class="even">
 <td>cota</td>
 <td>float</td>
 <td>Waterside slope of the dike (1:cota).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>unc_ppf</td>
 <td>float</td>
 <td>Percent point function (quantile) for uncertainty (default: 0.5).</td>
+</tr>
+<tr class="even">
+<td>u_peak</td>
+<td>float</td>
+<td>Peak flow velocity</td>
+</tr>
+<tr class="odd">
+<td>h_peak</td>
+<td>float</td>
+<td>Peak flow thickness</td>
+</tr>
+<tr class="even">
+<td>t_ovt</td>
+<td>float</td>
+<td>The total time of the overtopping event</td>
+</tr>
+<tr class="odd">
+<td>tru_tovt</td>
+<td>float</td>
+<td>Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)</td>
+</tr>
+<tr class="even">
+<td>trh_tovt</td>
+<td>float</td>
+<td>Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)</td>
+</tr>
+<tr class="odd">
+<td>coef</td>
+<td>float</td>
+<td>Coefficient optimized such that the integrated u(t) and h(t) equal the given volume</td>
 </tr>
 </tbody>
 </table>
