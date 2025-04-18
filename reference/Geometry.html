@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>boreflow – BoreFlow</title>
+<title>geometry – BoreFlow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,25 +20,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -77,7 +111,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">BoreFlow</span>
     </a>
   </div>
@@ -96,7 +130,7 @@ ul.task-list li input[type="checkbox"] {
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./reference/index.html"> 
+    <a class="nav-link" href="../reference/index.html"> 
 <span class="menu-text">Python API</span></a>
   </li>  
 </ul>
@@ -117,35 +151,305 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#boreflow.Geometry" id="toc-boreflow.Geometry" class="nav-link active" data-scroll-target="#boreflow.Geometry">Geometry</a>
+  <ul class="collapse">
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#boreflow.Geometry.check_geometry" id="toc-boreflow.Geometry.check_geometry" class="nav-link" data-scroll-target="#boreflow.Geometry.check_geometry">check_geometry</a></li>
+  <li><a href="#boreflow.Geometry.get_peak_flow_s" id="toc-boreflow.Geometry.get_peak_flow_s" class="nav-link" data-scroll-target="#boreflow.Geometry.get_peak_flow_s">get_peak_flow_s</a></li>
+  <li><a href="#boreflow.Geometry.get_peak_flow_x" id="toc-boreflow.Geometry.get_peak_flow_x" class="nav-link" data-scroll-target="#boreflow.Geometry.get_peak_flow_x">get_peak_flow_x</a></li>
+  <li><a href="#boreflow.Geometry.get_st" id="toc-boreflow.Geometry.get_st" class="nav-link" data-scroll-target="#boreflow.Geometry.get_st">get_st</a></li>
+  <li><a href="#boreflow.Geometry.get_xt" id="toc-boreflow.Geometry.get_xt" class="nav-link" data-scroll-target="#boreflow.Geometry.get_xt">get_xt</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">boreflow</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
+<section id="boreflow.Geometry" class="level1">
+<h1>Geometry</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Geometry(<span class="va">self</span>, x, z, n_manning)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Represents a discretized 1D geometry composed of multiple connected geometry parts, each defined by a pair of x and z coordinates, and associated Manning roughness values.</p>
+<section id="attributes" class="level2">
+<h2 class="anchored" data-anchor-id="attributes">Attributes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#boreflow.geometry.Geometry.boundary_condition">boundary_condition</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.geometry.Geometry.geometry_n">geometry_n</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.Geometry.geometry_parts">geometry_parts</a></td>
+<td>Built-in mutable sequence.</td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.geometry.Geometry.geometry_s">geometry_s</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.geometry.Geometry.geometry_x">geometry_x</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.geometry.Geometry.geometry_z">geometry_z</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.Geometry.simulated">simulated</a></td>
+<td>bool(x) -&gt; bool</td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.geometry.Geometry.simulation_time">simulation_time</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#boreflow.Geometry.check_geometry">check_geometry</a></td>
+<td>Validates the consistency of the geometry input arrays.</td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.Geometry.get_peak_flow_s">get_peak_flow_s</a></td>
+<td>Get the peak flow characteristics along the geometry (s-coordinate)</td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.Geometry.get_peak_flow_x">get_peak_flow_x</a></td>
+<td>Get the peak flow characteristics along the x-coordinate.</td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.Geometry.get_st">get_st</a></td>
+<td>Get the time series of flow variables at a specific s-location along the slope.</td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.Geometry.get_xt">get_xt</a></td>
+<td>Get the time series of flow variables at a specific x-location.</td>
+</tr>
+</tbody>
+</table>
+<section id="boreflow.Geometry.check_geometry" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Geometry.check_geometry">check_geometry</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Geometry.check_geometry(x, z, n_manning)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Validates the consistency of the geometry input arrays.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>x</td>
+<td>np.ndarray</td>
+<td>Array of x-coordinates.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>z</td>
+<td>np.ndarray</td>
+<td>Array of z-coordinates.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>n_manning</td>
+<td>np.ndarray</td>
+<td>Array of Manning’s n values.</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="boreflow.Geometry.get_peak_flow_s" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Geometry.get_peak_flow_s">get_peak_flow_s</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Geometry.get_peak_flow_s(get_h_perpendicular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Get the peak flow characteristics along the geometry (s-coordinate)</p>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters:</h4>
+<p>get_h_perpendicular : bool Whether to compute the perpendicular flow thickness (default is True).</p>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns:</h4>
+<p>np.ndarray Numpy 2D array with [s, hpeak, upeak, ufront]</p>
+</section>
+</section>
+<section id="boreflow.Geometry.get_peak_flow_x" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Geometry.get_peak_flow_x">get_peak_flow_x</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Geometry.get_peak_flow_x(get_h_perpendicular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Get the peak flow characteristics along the x-coordinate.</p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters:</h4>
+<p>get_h_perpendicular : bool Whether to compute the perpendicular flow thickness (default is True).</p>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns:</h4>
+<p>np.ndarray Numpy 2D array with [x, hpeak, upeak, ufront]</p>
+</section>
+</section>
+<section id="boreflow.Geometry.get_st" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Geometry.get_st">get_st</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Geometry.get_st(s, get_h_perpendicular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Get the time series of flow variables at a specific s-location along the slope.</p>
+<section id="parameters-3" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 7%">
+<col style="width: 63%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>s</td>
+<td>float</td>
+<td>The slope-based coordinate (distance along the geometry).</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>get_h_perpendicular</td>
+<td>bool</td>
+<td>Whether to compute the perpendicular flow thickness (default is True).</td>
+<td><code>True</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-2" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 15%">
+<col style="width: 78%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>np.ndarray or None</td>
+<td>A np.ndarray containing the time series at location x, or None if x is outside the modeled domain.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="boreflow.Geometry.get_xt" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Geometry.get_xt">get_xt</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Geometry.get_xt(x, get_h_perpendicular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Get the time series of flow variables at a specific x-location.</p>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 7%">
+<col style="width: 62%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>x</td>
+<td>float</td>
+<td>The x-coordinate at which to retrieve the time series.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>get_h_perpendicular</td>
+<td>bool</td>
+<td>Whether to compute the perpendicular water depth (default is True).</td>
+<td><code>True</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-3" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 14%">
+<col style="width: 79%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>np.ndarray or None</td>
+<td>A np.ndarray containing the time series [t, h, u] at location x, or None if x is outside the modeled domain.</td>
+</tr>
+</tbody>
+</table>
 
-    
-  
-    
-  </div>
-  
 
-
-</header>
-
-
-<p>The Python package BoreFlow provides a simple numerical model using Steep-Slope Shallow Water Equations to describe the flow of overtopping waves and bores.</p>
-<p>This Python package is developed as part of the Ph.D.&nbsp;research of Niels van der Vegt and is published under the GNU GPL-3 license.</p>
-
-
+</section>
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

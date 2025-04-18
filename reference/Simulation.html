@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>example – Python_package_template</title>
+<title>simulation – BoreFlow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Python_package_template</span>
+    <span class="navbar-title">BoreFlow</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -126,10 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Examples</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-examples">    
-        <li>
-    <a class="dropdown-item" href="../examples/notebooks/introduction.html">
- <span class="dropdown-text">Introduction to Python_package_template</span></a>
-  </li>  
+        <li class="dropdown-header">examples/notebooks/introduction.ipynb</li>
     </ul>
   </li>
   <li class="nav-item">
@@ -139,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/HKV-products-services/python_package_template"> <i class="bi bi-github" role="img" aria-label="GitHub">
+    <a class="nav-link" href="https://github.com/nielsvandervegt/boreflow"> <i class="bi bi-github" role="img" aria-label="GitHub">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -159,12 +156,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#python_package_template.Example" id="toc-python_package_template.Example" class="nav-link active" data-scroll-target="#python_package_template.Example">Example</a>
+  <li><a href="#boreflow.Simulation" id="toc-boreflow.Simulation" class="nav-link active" data-scroll-target="#boreflow.Simulation">Simulation</a>
   <ul class="collapse">
   <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
-  <li><a href="#python_package_template.Example.calculation" id="toc-python_package_template.Example.calculation" class="nav-link" data-scroll-target="#python_package_template.Example.calculation">calculation</a></li>
+  <li><a href="#boreflow.Simulation.run" id="toc-boreflow.Simulation.run" class="nav-link" data-scroll-target="#boreflow.Simulation.run">run</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -176,25 +173,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="python_package_template.Example" class="level1">
-<h1>Example</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Example()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Example class</p>
-<section id="attributes" class="level2 doc-section doc-section-attributes">
-<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
+<section id="boreflow.Simulation" class="level1">
+<h1>Simulation</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Simulation(<span class="va">self</span>, t_end<span class="op">=</span><span class="dv">10</span>, cfl<span class="op">=</span><span class="fl">0.5</span>, max_dt<span class="op">=</span><span class="fl">0.01</span>, dx<span class="op">=</span><span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A class to simulate a model using the Finite Volume Method (FVM).</p>
+<section id="attributes" class="level2">
+<h2 class="anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Name</th>
-<th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>factor</td>
-<td>float</td>
-<td>Power factor for calculation</td>
+<td><a href="#boreflow.simulation.Simulation.bc">bc</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.simulation.Simulation.cfl">cfl</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.simulation.Simulation.dx">dx</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.simulation.Simulation.geometry">geometry</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.simulation.Simulation.max_dt">max_dt</a></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.simulation.Simulation.min_dt">min_dt</a></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><a href="#boreflow.simulation.Simulation.t_end">t_end</a></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -210,18 +229,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#python_package_template.Example.calculation">calculation</a></td>
-<td>Perform a probabilistic calculation.</td>
+<td><a href="#boreflow.Simulation.run">run</a></td>
+<td>Run the simulation using the provided geometry, boundary conditions, and solver.</td>
 </tr>
 </tbody>
 </table>
-<section id="python_package_template.Example.calculation" class="level3">
-<h3 class="anchored" data-anchor-id="python_package_template.Example.calculation">calculation</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Example.calculation(a, b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Perform a probabilistic calculation.</p>
+<section id="boreflow.Simulation.run" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.Simulation.run">run</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Simulation.run(geometry, bc, solver<span class="op">=</span>Solver.EF_LLF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Run the simulation using the provided geometry, boundary conditions, and solver.</p>
+<p>The simulation involves discretizing the geometry, applying the Finite Volume Method (FVM), and computing the wetting front velocity for each geometry part. The simulation runs until the end time is reached or the conditions specified by the solver are satisfied.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 75%">
+<col style="width: 11%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -232,16 +258,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>a</td>
-<td>np.array</td>
-<td>a parameter.</td>
+<td>geometry</td>
+<td>Geometry</td>
+<td>Geometry object representing the physical domain for the simulation.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td>b</td>
-<td>np.array</td>
-<td>b parameter</td>
+<td>bc</td>
+<td>BCBase</td>
+<td>Boundary conditions for the simulation.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>solver</td>
+<td>Solver</td>
+<td>The solver to use for the simulation. The default is <code>Solver.EF_LLF</code> (Euler Forward with Local Lax-Friedrichs).</td>
+<td><code>Solver.EF_LLF</code></td>
 </tr>
 </tbody>
 </table>
@@ -249,6 +281,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 78%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -259,8 +296,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td>Updated results.</td>
-<td></td>
+<td>Geometry</td>
+<td>A new copy of the geometry object with the simulation results.</td>
 </tr>
 </tbody>
 </table>
