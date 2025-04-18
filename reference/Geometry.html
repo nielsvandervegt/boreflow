@@ -206,33 +206,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Array of x-coordinates.</td>
 </tr>
 <tr class="even">
+<td>geometry_s</td>
+<td>np.ndarray</td>
+<td>Arrau of s-coordinates (distance along the geometry)</td>
+</tr>
+<tr class="odd">
 <td>geometry_z</td>
 <td>np.ndarray</td>
 <td>Array of corresponding z-coordinates (elevation).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>geometry_n</td>
 <td>np.ndarray</td>
 <td>Array of Manning’s n values, one per segment (length = len(x) - 1).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>geometry_parts</td>
 <td>list[GeometryPart]</td>
 <td>List of all geometry parts (one part for each x[i] to x[i+1])</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>simulated</td>
 <td>bool</td>
 <td>Flag whether the model is simulated</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>simulation_time</td>
 <td>float</td>
 <td>Time it took to simulate the model</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>boundary_condition</td>
-<td>BC</td>
+<td>BCBase</td>
 <td>The boundary condition applied when simulated</td>
 </tr>
 </tbody>
