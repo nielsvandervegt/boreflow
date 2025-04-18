@@ -1,15 +1,19 @@
 # YAML 1.2
 ---
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: BoreFlow
+abstract: Python package to simulate the flow of overtopping and bores.
 authors:
   -
-    affiliation: "University of Twente, HKV lijn in water"
+    affiliation: University of Twente, HKV lijn in water
     family-names: Van der Vegt
     given-names: Niels
-
-cff-version: "0.0.1"
+    orcid: https://orcid.org/0009-0004-9542-0979
+version: 0.0.2
+date-released: 2025-04-18
 keywords:
   - Numerical modelling
   - Wave overtopping
 license: "GPL-3.0-or-later"
-message: "If you use this software, please cite it using these metadata."
-title: boreflow
+repository-code: "https://github.com/nielsvandervegt/boreflow"

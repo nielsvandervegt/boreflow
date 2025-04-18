@@ -1,7 +1,7 @@
 ---
-title: "boreflow"
+title: "BoreFlow"
 ---
 
-The Python package BoreFlow provides a simple numerical model using Steep-Slope Shallow Water Equations to describe the flow of overtopping waves and bores.
+The Python package 'boreflow' provides a simple numerical model using Steep-Slope Shallow Water Equations to describe the flow of overtopping waves and bores.
 
 This Python package is developed as part of the Ph.D. research of Niels van der Vegt and is published under the GNU GPL-3 license.

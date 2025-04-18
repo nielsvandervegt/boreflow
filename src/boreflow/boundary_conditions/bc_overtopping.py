@@ -13,11 +13,28 @@ class BCOvertopping(BCBaseOvertopping):
 
     Attributes
     ----------
+    volume : float
+        The to be simulated individual overtopping volume
     cota : float
         Waterside slope of the dike (1:cota).
     unc_ppf : float
         Percent point function (quantile) for uncertainty (default: 0.5).
+    u_peak : float
+        Peak flow velocity
+    h_peak : float
+        Peak flow thickness
+    t_ovt : float
+        The total time of the overtopping event
+    tru_tovt : float
+        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)
+    trh_tovt : float
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)
+    coef : float
+        Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
+
+    cota: float
+    unc_ppf: float
 
     def __init__(self, volume, cota, tru_tovt: float = 0.05, trh_tovt: float = 0.13, unc_ppf: float = 0.5) -> None:
         """

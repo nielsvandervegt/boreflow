@@ -12,11 +12,11 @@ class BCArray(BCBase):
     Attributes
     ----------
     t: np.ndarray
-        Time array
+        Array with the time signal
     h: np.ndarray
-        Flow thickness array
+        Array with the flow thickness signal
     u: np.ndarray
-        Flow velocity array
+        Array with the flow velocity signal
     """
 
     t: np.ndarray
