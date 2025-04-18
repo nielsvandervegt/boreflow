@@ -122,7 +122,7 @@ class Geometry():
             A np.ndarray containing the time series [t, h, u] at location x, or None if x is outside the modeled domain.
         """
         # Check if model is simulated
-        if self.simulated == False:
+        if not self.simulated:
             raise ValueError("Model not simulated")
         
         # Search the right geometry part
@@ -175,6 +175,10 @@ class Geometry():
         np.ndarray
             Numpy 2D array with [x, hpeak, upeak, ufront]
         """
+        # Check if this geometry part is simulated
+        if not self.simulated:
+            raise ValueError("Model not simulated")
+        
         # Initialize empty lists for storing the results
         _x = np.array([])
         _hpeak = np.array([])

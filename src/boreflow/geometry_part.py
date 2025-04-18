@@ -116,7 +116,7 @@ class GeometryPart:
             If the location x is outside the geometry, returns None.
         """
         # Check if this geometry part is simulated
-        if self.simulated == False:
+        if not self.simulated:
             raise ValueError("Model not simulated")
 
         # Check if x is in discretisation

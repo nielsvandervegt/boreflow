@@ -50,9 +50,14 @@ class BCBaseOvertopping(BCBase):
     def __init__(self) -> None:
         pass
 
-    def optimize_flow(self) -> None:
+    def optimize_flow(self) -> float:
         """
         Optimize coefficient until time series of u(t) and h(t) match the given volume
+
+        Returns
+        -------
+        float
+            The optimized coefficient
         """
         def optimize_volume(_coef):
             _t = np.arange(0, self.t_ovt, 0.001)
@@ -61,7 +66,7 @@ class BCBaseOvertopping(BCBase):
             return V - self.volume
 
         sol = root_scalar(optimize_volume, method="brentq", x0=1, bracket=(0, 150), xtol=0.0001)
-        self.coef = sol.root
+        return sol.root
 
     def get_flow(self, t: Union[float, np.ndarray], coef: float = None) -> np.ndarray:
         """

@@ -29,4 +29,4 @@ class BCWOS(BCBaseOvertopping):
         self.t_ovt = 4.4 * volume ** 0.3
 
         # Optimize flow
-        self.optimize_flow()
+        self.coef = self.optimize_flow()

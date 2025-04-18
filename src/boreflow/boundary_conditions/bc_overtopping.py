@@ -53,4 +53,4 @@ class BCOvertopping(BCBaseOvertopping):
         self.t_ovt = 4.0 * volume ** 0.41
 
         # Fit flow shape (Hughes et al., 2012)
-        self.optimize_flow()
+        self.coef = self.optimize_flow()
