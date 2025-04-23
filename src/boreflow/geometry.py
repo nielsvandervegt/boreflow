@@ -1,9 +1,8 @@
 import numpy as np
 
-from typing import Iterator, Union
+from typing import Union
 
 from .boundary_conditions.bc_base import BCBase
-from .geometry_part import GeometryPart
 
 
 class Geometry:
@@ -21,8 +20,24 @@ class Geometry:
         Array of corresponding z-coordinates (elevation).
     geometry_n : np.ndarray
         Array of Manning's n values, one per segment (length = len(x) - 1).
-    geometry_parts : list[GeometryPart]
-        List of all geometry parts (one part for each x[i] to x[i+1])
+    x : np.ndarray
+        Discretisation cell centers x
+    s : np.ndarray
+        Discretisation cell centers s
+    z : np.ndarray
+        Discretisation cell centers z
+    t : np.ndarray
+        Time steps of the results
+    u : np.ndarray
+        Results flow velocity [t, x]
+    h : np.ndarray
+        Results flow thickness along z-coordinates [t, x]
+    h_s : np.ndarray
+        Results flow thickness perpendicular to slope [t, x]
+    t_front : np.ndarray
+        Time of passing of the wetting front [x]
+    u_front : np.ndarray
+        Velocity of the wetting front [x]
     simulated : bool
         Flag whether the model is simulated
     simulation_time : float
@@ -31,11 +46,26 @@ class Geometry:
         The boundary condition applied when simulated
     """
 
+    # Geometry
     geometry_x: np.ndarray
     geometry_s: np.ndarray
     geometry_z: np.ndarray
     geometry_n: np.ndarray
-    geometry_parts: list[GeometryPart]
+
+    # Discretisation
+    x: np.ndarray
+    s: np.ndarray
+    z: np.ndarray
+
+    # Results
+    t: np.ndarray
+    u: np.ndarray
+    h: np.ndarray
+    h_s: np.ndarray
+    t_front: np.ndarray
+    u_front: np.ndarray
+
+    # Other
     simulated: bool
     simulation_time: float
     boundary_condition: BCBase
@@ -44,78 +74,68 @@ class Geometry:
         """
         Initialize a new Geometry object by discretizing the input profile.
         """
-        # Init
-        self.__iteration_index = 0
-
         # Check and save the input
-        self.check_geometry(geometry_x, geometry_z, geometry_n)
         self.geometry_x = np.array(geometry_x)
         self.geometry_z = np.array(geometry_z)
         self.geometry_n = np.array(geometry_n)
-        self.geometry_s = np.concatenate(
-            ([self.geometry_x[0]], np.sqrt((self.geometry_x[1:] - self.geometry_x[:-1]) ** 2 + (self.geometry_z[1:] - self.geometry_z[:-1]) ** 2))
-        )
+        self.check_geometry()
+
+        # Calculate alpha and slope coordinate
+        dx = self.geometry_x[1:] - self.geometry_x[:-1]
+        dz = self.geometry_z[1:] - self.geometry_z[:-1]
+        self.geometry_alpha = -np.arctan(dz / dx)
+        self.geometry_s = np.concatenate(([self.geometry_x[0]], np.sqrt(dx**2 + dz**2)))
         self.geometry_s = np.cumsum(self.geometry_s)
 
-        # Init the geometry parts
-        self.geometry_parts = []
-        for i in range(len(geometry_x) - 1):
-            self.geometry_parts.append(GeometryPart(i + 1, geometry_x[i : i + 2], geometry_z[i : i + 2], geometry_n[i]))
-
-    def __len__(self) -> int:
-        """
-        Returns the number of geometry parts.
-
-        Returns
-        -------
-        int
-            Number of discretized geometry segments.
-        """
-        return len(self.geometry_parts)
-
-    def __iter__(self) -> Iterator[GeometryPart]:
-        """
-        Initializes an iterator over the geometry parts.
-        """
-        self.__iteration_index = 0
-        return self
-
-    def __next__(self) -> GeometryPart:
-        """
-        Returns the next GeometryPart in the iteration.
-
-        Returns
-        -------
-        GeometryPart
-            The next part in the geometry sequence.
-        """
-        if self.__iteration_index < len(self.geometry_parts):
-            self.__iteration_index += 1
-            return self.geometry_parts[self.__iteration_index - 1]
-        else:
-            self.__iteration_index = 0
-            raise StopIteration
-
-    def check_geometry(self, geometry_x: np.ndarray, geometry_z: np.ndarray, geometry_n: np.ndarray):
+    def check_geometry(self):
         """
         Validates the consistency of the geometry input arrays.
-
-        Parameters
-        ----------
-        geometry_x : np.ndarray
-            Array of x-coordinates.
-        geometry_z : np.ndarray
-            Array of z-coordinates.
-        geometry_n : np.ndarray
-            Array of Manning's n values.
         """
         # x and z should be of equal length
-        if len(geometry_x) != len(geometry_z):
+        if len(self.geometry_x) != len(self.geometry_z):
             raise ValueError("Arrays x and z should be of equal length.")
 
         # n_manning should be equal to x/z minus 1
-        if len(geometry_n) != (len(geometry_x) - 1):
+        if len(self.geometry_n) != (len(self.geometry_x) - 1):
             raise ValueError("Array n_manning should be equal to the length of x minus 1.")
+
+    def derive_front_velocity(self, threshold: float = 0.01) -> None:
+        """
+        Derive the time and velocity of the wetting front for this geometry part.
+
+        The wetting front is considered as the point where the water depth exceeds a given threshold.
+        The time of passing (t_front) is calculated based on linear interpolation.
+        The velocity (u_front) of the wetting front is calculated based on second-order differences.
+
+        Parameters
+        ----------
+        threshold : float, optional
+            The threshold for determining the wetting front location (default: 0.01m)
+        """
+        # Wavefront
+        self.t_front = np.empty((len(self.x)))
+        self.u_front = np.empty((len(self.x)))
+
+        # Determine the time of passing of the wetting front (t_front)
+        for j, _h in enumerate(self.h_s.T):
+            idx = np.where(_h > threshold)[0]
+            if len(idx) > 0:
+                self.t_front[j] = np.interp(0.01, _h[idx[0] - 1 : idx[0] + 1], self.t[idx[0] - 1 : idx[0] + 1])
+            else:
+                self.t_front[j] = None
+
+        # Determine the velocity of the wetting front (u_front) using second-order differences
+        for j in range(len(self.t_front)):
+            if j == 0:
+                dt = self.t_front[1] - self.t_front[0]
+                dx = self.s[1] - self.s[0]
+            elif j == len(self.t_front) - 1:
+                dt = self.t_front[-1] - self.t_front[-2]
+                dx = self.s[-1] - self.s[-2]
+            else:
+                dt = (self.t_front[j + 1] - self.t_front[j - 1]) / 2
+                dx = (self.s[j + 1] - self.s[j - 1]) / 2
+            self.u_front[j] = dx / dt
 
     def get_xt(self, x: float, get_h_perpendicular: bool = True) -> Union[np.ndarray, None]:
         """
@@ -133,23 +153,31 @@ class Geometry:
         np.ndarray or None
             A np.ndarray containing the time series [t, h, u] at location x, or None if x is outside the modeled domain.
         """
-        # Check if model is simulated
+        # Check if this geometry part is simulated
         if not self.simulated:
             raise ValueError("Model not simulated")
 
-        # Search the right geometry part
-        _data = None
-        for _geometry_part in self:
-            _data = _geometry_part.get_xt(x, get_h_perpendicular)
-            if _data is not None:
-                break
+        # Check if x is in discretisation
+        if x < self.x[0] or self.x[-1] < x:
+            print(f"Cannot get data for x={x}. Is the location outside the grid?")
+            return None
 
-        # Error if no geometrypart can be identified (outside the grid or between two SSSWE)
-        if _data is None:
-            print(f"Cannot get data for x={x}. Is the location outside the grid or around between two SSSWE boundaries?")
+        # Search for lower x and upper x
+        idx_lower = np.array([np.abs(_x - x) for _x in self.x]).argmin()
+        idx_upper = idx_lower + 1
 
-        # Return data
-        return _data
+        # Interpolate
+        _u = np.array(self.u[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.u[:, idx_upper] - self.u[:, idx_lower]))
+        if get_h_perpendicular:
+            _h = np.array(
+                self.h_s[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h_s[:, idx_upper] - self.h_s[:, idx_lower])
+            )
+        else:
+            _h = np.array(
+                self.h[:, idx_lower] + (x - self.x[idx_lower]) / (self.x[idx_upper] - self.x[idx_lower]) * (self.h[:, idx_upper] - self.h[:, idx_lower])
+            )
+
+        return np.array([self.t, _h, _u])
 
     def get_st(self, s: float, get_h_perpendicular: bool = True) -> Union[np.ndarray, None]:
         """
@@ -173,7 +201,7 @@ class Geometry:
         # Return
         return self.get_xt(_x, get_h_perpendicular)
 
-    def get_peak_flow_x(self, get_h_perpendicular: bool = True) -> np.ndarray:
+    def get_peak_flow(self, get_h_perpendicular: bool = True) -> np.ndarray:
         """
         Get the peak flow characteristics along the x-coordinate.
 
@@ -185,52 +213,13 @@ class Geometry:
         Returns:
         -------
         np.ndarray
-            Numpy 2D array with [x, hpeak, upeak, ufront]
+            Numpy 2D array with [hpeak, upeak]
         """
         # Check if this geometry part is simulated
         if not self.simulated:
             raise ValueError("Model not simulated")
 
-        # Initialize empty lists for storing the results
-        _x = np.array([])
-        _hpeak = np.array([])
-        _upeak = np.array([])
-        _ufront = np.array([])
+        # Choose the height array (perpendicular or horizontal)
+        _h = self.h_s if get_h_perpendicular else self.h
 
-        # Loop over geometry parts and collect data
-        for geometry_part in self:
-            # Add the x-coordinates and front velocities
-            _x = np.concatenate((_x, geometry_part.x))
-            _ufront = np.concatenate((_ufront, geometry_part.u_front))
-
-            # Choose the height array (perpendicular or horizontal)
-            _h = geometry_part.h_s if get_h_perpendicular else geometry_part.h_x
-
-            # Get the peak height and velocity
-            _hpeak = np.concatenate((_hpeak, np.max(_h, axis=0)))
-            _upeak = np.concatenate((_upeak, np.max(geometry_part.u, axis=0)))
-
-        return np.array([_x, _hpeak, _upeak, _ufront])
-
-    def get_peak_flow_s(self, get_h_perpendicular: bool = True) -> np.ndarray:
-        """
-        Get the peak flow characteristics along the geometry (s-coordinate)
-
-        Parameters:
-        ----------
-        get_h_perpendicular : bool
-            Whether to compute the perpendicular flow thickness (default is True).
-
-        Returns:
-        -------
-        np.ndarray
-            Numpy 2D array with [s, hpeak, upeak, ufront]
-        """
-        # Get flow
-        _x, _hpeak, _upeak, _ufront = self.get_peak_flow_x(get_h_perpendicular)
-
-        # Transform s into x
-        _s = np.interp(_x, self.geometry_x, self.geometry_s)
-
-        # Return
-        return np.array([_s, _hpeak, _upeak, _ufront])
+        return np.array([np.max(_h, axis=0), np.max(self.u, axis=0)])

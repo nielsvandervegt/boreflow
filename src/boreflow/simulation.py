@@ -2,7 +2,7 @@ from copy import deepcopy
 from time import time
 
 from .boundary_conditions.bc_base import BCBase
-from .enum import Solver
+from .enum import Flux, Limiter, TimeIntegration
 from .finite_volume_method import FVM
 from .geometry import Geometry
 
@@ -23,7 +23,7 @@ class Simulation:
         CFL (Courant–Friedrichs–Lewy) number for time step stability (default: 0.5)
     max_dt : float
         Maximum time step size (default: 0.01s)
-    dx : float
+    nx : int
         Spatial grid resolution (default: 0.1m)
     """
 
@@ -33,18 +33,25 @@ class Simulation:
     t_end: float
     cfl: float
     max_dt: float
-    dx: float
+    nx: int
 
-    def __init__(self, t_end: float = 10, cfl: float = 0.5, max_dt: float = 0.01, dx: float = 0.1) -> None:
+    def __init__(self, t_end: float = 10, cfl: float = 0.5, max_dt: float = 0.01, nx: int = 100) -> None:
         """
         Initialize simulation time and spatial parameters
         """
         self.t_end = t_end
         self.max_dt = max_dt
-        self.dx = dx
+        self.nx = nx
         self.cfl = cfl
 
-    def run(self, geometry: Geometry, bc: BCBase, solver: Solver = Solver.EF_LLF) -> Geometry:
+    def run(
+        self,
+        geometry: Geometry,
+        bc: BCBase,
+        limiter: Limiter = Limiter.minmod,
+        flux: Flux = Flux.HLL,
+        timeintegration: TimeIntegration = TimeIntegration.EF,
+    ) -> Geometry:
         """
         Run the simulation using the provided geometry, boundary conditions, and solver.
 
@@ -58,8 +65,12 @@ class Simulation:
             Geometry object representing the physical domain for the simulation.
         bc : BCBase
             Boundary conditions for the simulation.
-        solver : Solver, optional
-            The solver to use for the simulation. The default is `Solver.EF_LLF` (Euler Forward with Local Lax-Friedrichs).
+        limiter : Limiter, optional
+            The limiter to use in the simulation. The default is `Limiter.minmod`.
+        flux : Flux, optional
+            Flux types to use in the simulation. The default is `Flux.HLL`.
+        timeintegration : TimeIntegration, optional
+            Time integration scheme to use in the simulation. The default is `TimeIntegration.EF`.
 
         Returns
         -------
@@ -79,10 +90,10 @@ class Simulation:
         start_time = time()
 
         # Run for each geometry part
-        for i, _geometrypart in enumerate(geometry):
-            _bc = bc if i == 0 else geometry.geometry_parts[i - 1]
-            FVM.run_fvm(_geometrypart, _bc, solver, self.t_end, self.cfl, self.max_dt, self.dx)
-            _geometrypart.derive_front_velocity()
+        fvm = FVM(bc, self.t_end, self.max_dt, self.cfl)
+        fvm.discretise(geometry, self.nx)
+        fvm.run(limiter, flux, timeintegration)
+        geometry.derive_front_velocity()
 
         # Finish
         geometry.simulated = True

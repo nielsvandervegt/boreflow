@@ -1,369 +1,245 @@
 import numpy as np
-
 from tqdm import tqdm
-from typing import Union
 
 from .boundary_conditions.bc_base import BCBase
-from .enum import Solver
-from .geometry_part import GeometryPart
+from .geometry import Geometry
+from .enum import Flux, Limiter, TimeIntegration
 
 
 class FVM:
     """
-    A class implementing the Finite Volume Method (FVM) for solving one-dimensional Shallow Water Equations (Maranzoni and Tomirotti, 2022).
-
-    The FVM is used for time integration (Euler Forward, Runge-Kutta 4) and flux calculation (local Lax-Friedrichs).
+    Class to solve the SSSWE
     """
 
-    # Parameters
-    g = 9.81
+    # Objects
+    geometry: Geometry
+    bc_left: BCBase
 
-    @staticmethod
-    def run_fvm(
-        geometry_part: GeometryPart, boundary_condition: Union[BCBase, GeometryPart], solver: Solver, t_end: float, cfl: float, max_dt: float, dx: float
-    ):
+    # Discretisation
+    dx: float
+    x_cells: np.ndarray
+    z_cells: np.ndarray
+    n_cells: np.ndarray
+    x_interfaces: np.ndarray
+
+    # Simulation parameters
+    t_end: float
+    max_dt: float
+    cfl: float
+
+    # Other
+    g: float = 9.81
+    first_dt: float = 1e-6
+    h_wet: float = 1e-3  # h < h_min is assumed to be dry
+    h_min: float = 1e-6
+
+    def __init__(self, boundary_condition: BCBase, t_end: float, max_dt: float, cfl: float):
         """
-        Solve the one-dimensional Shallow Water Equations using a Finite Volume Method.
-
-        Updates the solution within the provided GeometryPart object.
-
-        Parameters
-        ----------
-        geometry_part : GeometryPart
-            The domain to be simulated
-        boundary_condition : Union[BCBase, GeometryPart]
-            Boundary condition definition or the upstream GeometryPart
-        solver : Solver
-            Solver enum containing the numerical integration scheme (e.g., RK4 with LLF flux).
-        t_end : float
-            End time of the simulation.
-        cfl : float
-            Courant–Friedrichs–Lewy number for time step stability.
-        max_dt : float
-            Maximum allowed timestep
-        dx : float
-            Spatial resolution of the computational grid.
+        Initialize FVM solver
         """
+        # Save parameters
+        self.bc_left = boundary_condition
+        self.t_end = t_end
+        self.max_dt = max_dt
+        self.cfl = cfl
+
+    def discretise(self, geometry: Geometry, nx: int):
+        # Save
+        self.geometry = geometry
+        self.nx = nx
+
+        # x_cells and z_cells (add ghost cells to both ends)
+        self.dx = (geometry.geometry_x[-1] - geometry.geometry_x[0]) / self.nx
+        self.x_cells = np.linspace(-self.dx / 2, geometry.geometry_x[-1] + self.dx / 2, self.nx + 2)
+        self.z_cells = np.interp(self.x_cells, geometry.geometry_x, geometry.geometry_z)
+        self.z_cells[0] = (self.z_cells[1] - self.z_cells[2]) + self.z_cells[1]
+        self.z_cells[-1] = (self.z_cells[-2] - self.z_cells[-3]) + self.z_cells[-2]
+
+        # Roughness and slope in all interior cells (no ghost cells)
+        self.n_cells = np.zeros_like(self.x_cells)
+        self.n_cells[1:-1] = geometry.geometry_n[np.searchsorted(geometry.geometry_x, self.x_cells[1:-1], side="left") - 1]
+        self.alpha_cells = np.zeros_like(self.x_cells)
+        self.alpha_cells[1:-1] = np.arctan((self.z_cells[:-2] - self.z_cells[2:]) / (2 * self.dx))
+
+        # Init results
+        geometry.t = np.array([])
+        geometry.x = self.x_cells[1:-1]
+        geometry.s = np.interp(geometry.x, geometry.geometry_x, geometry.geometry_s)
+        geometry.u = np.empty((0, self.nx))
+        geometry.h = np.empty((0, self.nx))
+        geometry.h_s = np.empty((0, self.nx))
+
+    def run(self, limiter: Limiter, flux: Flux, timeintegration: TimeIntegration):
+        """"""
         # Progress bar
-        pbar = tqdm(total=t_end, desc=f"Part #{geometry_part.id}", bar_format="{l_bar}{bar}| Simulated: {n:.2f}/{total:.2f} sec")
+        pbar = tqdm(total=self.t_end, desc="Simulating", bar_format="{l_bar}{bar}| {n:.2f}/{total:.2f} s")
 
-        # Initial conditions
-        geometry_part.init_simulation(dx)
-        U = np.zeros((2, len(geometry_part.x)))
+        # Initial conditions: Empty cells + ghost cells
+        U = np.zeros((2, self.nx + 2))
 
-        # Finite volume
+        # Time stepping
         t = 0.0
-        while t < t_end:
-            # Determine timestep, use as maximum 'max_dt'
-            max_speed = np.maximum(FVM.max_wave_speed(U), 1e-8)
-            dt = np.min([cfl * dx / max_speed, max_dt])
-            if t + dt > t_end:
-                dt = t_end - t
+        while t < self.t_end:
+            # CFL to determine dt
+            max_speed = np.maximum(self.compute_max_velocity(U), 1e-8)
+            dt = np.min([self.cfl * self.dx / max_speed, self.max_dt])
+            if t + dt > self.t_end:
+                dt = self.t_end - t
+
+            # If t = 0, use self.first_dt as timestep
             if t == 0.0:
-                dt = 1e-6
+                dt = self.first_dt
 
-            # Update cells
-            if solver == Solver.EF_LLF:
-                U = FVM.euler_step(U, t, dt, dx, geometry_part, boundary_condition)
-            elif solver == Solver.RK4_LLF:
-                U = FVM.rk4_step(U, t, dt, dx, geometry_part, boundary_condition)
+            # Time step
+            if timeintegration == TimeIntegration.EF:
+                rhs = self.compute_rhs(t, U, limiter, flux)
+                U = U + dt * rhs
+            elif timeintegration == TimeIntegration.RK2:
+                k1 = self.compute_rhs(t, U, limiter, flux)
+                k2 = self.compute_rhs(t + dt, U + 0.5 * dt * k1, limiter, flux)
+                U = U + dt * k2
             else:
-                raise ValueError(f"Unknown solver '{solver}'")
+                raise NotImplementedError()
 
-            # Save
-            geometry_part.t = np.append(geometry_part.t, float(t))
-            geometry_part.h_x = np.concatenate((geometry_part.h_x, [U[0, :]]), axis=0)
-            _div = np.divide(U[1, :], U[0, :], out=np.zeros_like(U[0, :]), where=U[0, :] > 1e-6)
-            geometry_part.u = np.concatenate((geometry_part.u, [_div]), axis=0)
+            # Save results
+            self.geometry.t = np.concatenate((self.geometry.t, [t]))
+            self.geometry.h = np.concatenate((self.geometry.h, [U[0, 1:-1]]), axis=0)
+            u = np.divide(U[1, 1:-1], U[0, 1:-1], out=np.zeros_like(U[0, 1:-1]), where=U[0, 1:-1] > self.h_wet)
+            self.geometry.u = np.concatenate((self.geometry.u, [u]), axis=0)
 
-            # Update progress bar
-            pbar.update(dt if t <= t_end else t_end - (t - dt))
-
-            # Increase timestep
+            # Update progress bar and increase time
+            pbar.update(dt)
             t += dt
 
-        # Determine the flow thickness perpendicular to the slope
-        geometry_part.h_s = geometry_part.h_x * np.cos(geometry_part.geometry_alpha)
+        # Calculate water depth perpendicular to slope
+        self.geometry.h_s = self.geometry.h * np.cos(self.alpha_cells[1:-1])
 
-        # Flag the object as done
-        geometry_part.simulated = True
-
-        # Close the progress bar
+        # Close progress bar
         pbar.close()
 
-    @staticmethod
-    def euler_step(U, t, dt, dx, geometry_part, boundary_condition) -> np.ndarray:
-        """
-        Perform a single Euler Forward time step.
+    def compute_rhs(self, t: float, U: np.ndarray, limiter: Limiter, flux: Flux):
+        # 1) Add boundary conditions
+        _h, _u = self.bc_left.get_flow(t).T[0]
+        U[:, 0] = np.array([_h, _h * _u]) if _h > self.h_min else np.array([0.0, 0.0])
+        U[:, -1] = U[:, -2]
 
-        Parameters
-        ----------
-        U : np.ndarray
-            The current state of the solution (height and momentum).
-        t : float
-            Current time.
-        dt : float
-            Time step size.
-        dx : float
-            Spatial resolution.
-        geometry_part : GeometryPart
-            The part of the domain being simulated.
-        boundary_condition : Union[BCBase, GeometryPart]
-            Boundary condition or upstream geometry part.
+        # 2) Apply limiter to interior cells
+        deltaU = self.limiter(U, limiter)
+        deltaAlpha = self.limiter(np.array([self.alpha_cells]), limiter)[0]
 
-        Returns
-        -------
-        np.ndarray
-            Updated state after the Euler step.
-        """
-        rhs = FVM.compute_rhs(U, t, dx, geometry_part, boundary_condition)
-        return U + dt * rhs
+        # 3) Reconstruct fluxes and alpha at left and right of interface
+        UL = U[:, :-1] + 0.5 * deltaU[:, :-1]
+        UR = U[:, 1:] - 0.5 * deltaU[:, 1:]
+        alphaL = self.alpha_cells[:-1] + 0.5 * deltaAlpha[:-1]
+        alphaR = self.alpha_cells[1:] - 0.5 * deltaAlpha[1:]
 
-    @staticmethod
-    def rk4_step(U, t, dt, dx, geometry_part, boundary_condition) -> np.ndarray:
-        """
-        Perform a single Runge-Kutta 4 time step.
+        # 4) Calculate flux
+        F = np.zeros_like(UL)
+        if flux == Flux.HLL:
+            for i in range(len(F[0])):
+                F[:, i] = self.hll_flux(UL[:, i], UR[:, i], alphaL[i], alphaR[i])
+        else:
+            raise NotImplementedError()
 
-        Parameters
-        ----------
-        U : np.ndarray
-            The current state of the solution (height and momentum).
-        t : float
-            Current time.
-        dt : float
-            Time step size.
-        dx : float
-            Spatial resolution.
-        geometry_part : GeometryPart
-            The part of the domain being simulated.
-        boundary_condition : Union[BCBase, GeometryPart]
-            Boundary condition or upstream geometry part.
+        # 5) Calculate source
+        S = self.source_term(U)
 
-        Returns
-        -------
-        np.ndarray
-            Updated state after the RK4 step.
-        """
-        k1 = FVM.compute_rhs(U, t, dx, geometry_part, boundary_condition)
-        k2 = FVM.compute_rhs(U + 0.5 * dt * k1, t, dx, geometry_part, boundary_condition)
-        k3 = FVM.compute_rhs(U + 0.5 * dt * k2, t, dx, geometry_part, boundary_condition)
-        k4 = FVM.compute_rhs(U + dt * k3, t, dx, geometry_part, boundary_condition)
-        return U + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-
-    @staticmethod
-    def compute_rhs(U, t, dx, geometry_part: GeometryPart, bc: Union[BCBase, GeometryPart]) -> np.ndarray:
-        """
-        Compute the right-hand side (RHS) of the Shallow Water Equations for the finite volume method.
-
-        The RHS is calculated as the flux differences between neighboring cells, along with the source terms
-        (such as friction and gravitational forces). The fluxes are computed using the local Lax-Friedrichs method.
-
-        Parameters
-        ----------
-        U : np.ndarray
-            The current state of the solution at all grid points (2 x Nx), where:
-            - U[0, :] represents the water height (h)
-            - U[1, :] represents the water momentum (h * u)
-        t : float
-            The current time of the simulation.
-        dx : float
-            The spatial resolution of the computational grid (distance between grid points).
-        geometry_part : GeometryPart
-            The specific geometry being simulated, which includes grid information, slope angle, and roughness.
-        bc : Union[BCBase, GeometryPart]
-            The boundary condition object or the upstream geometry part providing boundary conditions.
-
-        Returns
-        -------
-        np.ndarray
-            The right-hand side of the Shallow Water Equations (2 x Nx array).
-            This will be used for updating the solution in the finite volume method.
-        """
-        # Compute fluxes
-        Nx = U.shape[1]
-        F_interface = np.zeros((2, Nx + 1))
-        for i in range(Nx + 1):
-            if i == 0:
-                UL = np.array(FVM.boundary_conditions(t, geometry_part, bc))
-                UR = U[:, 0]
-            elif i == Nx:
-                UL = U[:, Nx - 1]
-                UR = U[:, Nx - 1]
-            else:
-                UL = U[:, i - 1]
-                UR = U[:, i]
-            F_interface[:, i] = FVM.rusanov_flux(UL, UR, geometry_part.geometry_alpha)
-
-        S = FVM.compute_source_friction(U, geometry_part)
-
-        # Compute the spatial operator
+        # 6) Calculate and return RHS
         rhs = np.zeros_like(U)
-        for i in range(Nx):
-            rhs[:, i] = -(F_interface[:, i + 1] - F_interface[:, i]) / dx + S[:, i]
-
-        # Return the right hand side
+        rhs[:, 1:-1] = -(F[:, 1:] - F[:, :-1]) / self.dx + S[:, 1:-1]
         return rhs
 
-    @staticmethod
-    def boundary_conditions(t: float, geometry_part: GeometryPart, bc: Union[BCBase, GeometryPart]):
-        """
-        Return the boundary condition at the upstream interface. The boundary condition can be derived
-        from either a Boundary Condition (BCBase) object or from the downstream interface of the upstream GeometryPart.
+    def limiter(self, U: np.ndarray, limiter: Limiter):
+        """"""
+        # Create an empty deltaU
+        deltaU = np.zeros_like(U)
 
-        Parameters
-        ----------
-        t : float
-            Current time of the simulation.
-        geometry_part : GeometryPart
-            Geometry part for which the boundary condition is being applied.
-        bc : Union[BCBase, GeometryPart]
-            Boundary condition, which can be a BCBase object or the upstream GeometryPart providing the boundary condition.
+        # Apply limiter at each interface (2, ..., N-1)
+        for i in range(len(U)):
+            dL = U[i, 1:-1] - U[i, :-2]
+            dR = U[i, 2:] - U[i, 1:-1]
+            if limiter == Limiter.minmod:
+                deltaU[i, 1:-1] = np.where(dL * dR > 0, np.sign(dL) * np.minimum(np.abs(dL), np.abs(dR)), 0.0)
+            elif limiter == Limiter.vanLeer:
+                _limiter = np.zeros_like(deltaU[i, 1:-1])
+                _mask = dL * dR > 0
+                _limiter[_mask] = 2 * dL[_mask] * dR[_mask] / (dL[_mask] + dR[_mask])
+                deltaU[i, 1:-1] = _limiter
+            else:
+                raise NotImplementedError()
 
-        Returns
-        -------
-        list
-            The boundary condition at the interface as a list:
-            [h, h * u] where `h` is the water height and `u` is the velocity (momentum / height).
-        """
-        if isinstance(bc, BCBase):
-            _h, _u = bc.get_flow(t)
-            _h = _h[0] / np.cos(geometry_part.geometry_alpha)
-            return [_h, _h * _u[0]]
-        elif isinstance(bc, GeometryPart):
-            _bc_h = np.array(bc.h_x[:, -1]) * np.cos(bc.geometry_alpha)
-            _h = np.interp(t, bc.t, _bc_h)
-            _h = _h / np.cos(geometry_part.geometry_alpha)
-            _u = np.interp(t, bc.t, bc.u[:, -1])
-            return [_h, _h * _u]
+        # Return
+        return deltaU
+
+    def hll_flux(self, UL, UR, alphaL, alphaR):
+        # Get h and u
+        hL, huL = UL
+        hR, huR = UR
+
+        # If the water depth is too shallow, assume dry cell
+        if hL < self.h_min:
+            hL = 0.0
+            huL = 0.0
+            uL = 0.0
         else:
-            raise NotImplementedError("Unknown object to derive the boundary conditions from")
+            uL = huL / hL
+        if hR < self.h_min:
+            hR = 0.0
+            huR = 0.0
+            uR = 0.0
+        else:
+            uR = huR / hR
 
-    @staticmethod
-    def flux_state(U_vec, alpha):
-        """
-        Compute the flux for a given state (h, hu) using the shallow water equations.
+        # If both cells have no water depth, return no flux
+        if hL < self.h_min and hR < self.h_min:
+            return np.array([0, 0])
 
-        Parameters
-        ----------
-        U_vec : np.ndarray
-            The state vector containing [h, hu] where `h` is the water height and `hu` is the water momentum (h * u).
-        alpha : float
-            The slope angle of the geometry.
+        # Reconstruct
+        UL = np.array([hL, huL])
+        UR = np.array([hR, huR])
 
-        Returns
-        -------
-        np.ndarray
-            The flux vector [F0, F1] where:
-            - F0 is the flux related to the water height (h)
-            - F1 is the flux related to the momentum (hu)
-        """
-        h = U_vec[0]
-        u = U_vec[1] / h if h > 1e-6 else 0.0
-        F0 = u * h * np.cos(alpha)
-        F1 = (u**2 * h + 0.5 * FVM.g * h**2 * (np.cos(alpha) ** 2)) * np.cos(alpha)
-        return np.array([F0, F1])
+        # Calculate wave speeds
+        cL = np.sqrt(self.g * hL) * np.cos(alphaL)
+        cR = np.sqrt(self.g * hR) * np.cos(alphaR)
+        sL = np.minimum(uL * np.cos(alphaL) - cL, uR * np.cos(alphaR) - cR)
+        sR = np.maximum(uL * np.cos(alphaL) + cL, uR * np.cos(alphaR) + cR)
 
-    @staticmethod
-    def rusanov_flux(UL, UR, alpha) -> np.ndarray:
-        """
-        Compute the local Lax-Friedrichs flux at the interface between the left (UL) and right (UR) states.
+        # Left and right flux
+        FL = np.array([hL * uL * np.cos(alphaL), (hL * uL**2 + 0.5 * self.g * hL**2 * np.cos(alphaL) ** 2) * np.cos(alphaL)])
+        FR = np.array([hR * uR * np.cos(alphaR), (hR * uR**2 + 0.5 * self.g * hR**2 * np.cos(alphaR) ** 2) * np.cos(alphaR)])
 
-        This method estimates the maximum wave speed and uses it to compute the flux at the interface between two adjacent cells
-        using the Lax-Friedrichs method.
+        # HLL
+        if sL > 0:
+            return FL
+        elif sR < 0:
+            return FR
+        else:
+            return (sR * FL - sL * FR + sL * sR * (UR - UL)) / (sR - sL)
 
-        Parameters
-        ----------
-        UL : np.ndarray
-            The state vector [h, hu] at the left cell of the interface.
-        UR : np.ndarray
-            The state vector [h, hu] at the right cell of the interface.
-        alpha : float
-            The slope angle of the geometry.
+    def source_term(self, U):
+        # Dry
+        h, hu = U
 
-        Returns
-        -------
-        np.ndarray
-            The flux vector at the interface [F0, F1].
-        """
-        FL = FVM.flux_state(UL, alpha)
-        FR = FVM.flux_state(UR, alpha)
+        # Calculate Source Terms (Momentum only)
+        source_term = np.zeros((2, self.nx + 2))
+        for i in range(1, self.nx + 1):  # Avoid ghost cells
+            # Apply dry conditions
+            if h[i] <= self.h_wet:
+                source_term[1, i] = 0.0
+                continue
 
-        # Estimate wave speeds for left and right states:
-        uL = UL[1] / UL[0] if UL[0] > 1e-6 else 0.0
-        uR = UR[1] / UR[0] if UR[0] > 1e-6 else 0.0
-        cL = np.sqrt(FVM.g * UL[0])
-        cR = np.sqrt(FVM.g * UR[0])
-        smax = max(abs(uL) + cL, abs(uR) + cR)
+            # Friction term for source
+            u_i = hu[i] / h[i]
+            friction_term = (self.n_cells[i] ** 2 * u_i * abs(u_i)) / h[i] ** (4 / 3) * np.sqrt(1 + np.tan(self.alpha_cells[i]) ** 2)
+            source_term[1, i] = FVM.g * h[i] * (np.sin(self.alpha_cells[i]) - friction_term)
 
-        return 0.5 * (FL + FR) - 0.5 * smax * (UR - UL)
+        return source_term
 
-    @staticmethod
-    def compute_source_friction(U, geometry_part: GeometryPart, h_threshold: float = 0.001) -> np.ndarray:
-        """
-        Compute the source term related to friction for the shallow water equations.
+    def compute_max_velocity(self, U: np.ndarray):
+        """"""
+        # Init empty array
+        u = np.zeros_like(U[0])
 
-        The source term accounts for the frictional forces due to the roughness of the terrain (Manning's roughness)
-        and gravitational forces acting on the water surface.
-
-        Parameters
-        ----------
-        U : np.ndarray
-            The state vector [h, hu] at each grid point where:
-            - U[0, :] represents the water height (h)
-            - U[1, :] represents the water momentum (h * u)
-        geometry_part : GeometryPart
-            The geometry part being simulated, including slope angle and roughness.
-        h_threshold : float, optional
-            A threshold for the water height below which the friction is considered negligible (default: 0.001).
-
-        Returns
-        -------
-        np.ndarray
-            The source term for the friction (2 x Nx array).
-        """
-        S = np.zeros_like(U)
-        h = U[0, :]
-
-        # Avoid division by zero by setting u to 0 when h is below the threshold
-        u = U[1, :] / np.maximum(h, h_threshold)
-
-        # Ensure the friction term does not cause overflow by limiting h and using np.maximum
-        ft = (
-            FVM.g
-            * h
-            * (geometry_part.geometry_n**2 * u**2)
-            / (np.maximum(h ** (4 / 3), h_threshold ** (4 / 3)))
-            * np.sqrt(1 + np.tan(geometry_part.geometry_alpha) ** 2)
-        )
-        friction_term = np.where(h > h_threshold, ft, 0.0)
-
-        # Update source term
-        S[1, :] = FVM.g * h * np.sin(geometry_part.geometry_alpha) - friction_term
-        return S
-
-    @staticmethod
-    def max_wave_speed(U: np.ndarray) -> float:
-        """
-        Compute the maximum wave speed over all cells in the domain.
-
-        The maximum wave speed is the sum of the velocity and the wave speed (due to gravity) at each grid point,
-        and this is used to determine the appropriate time step size in the simulation.
-
-        Parameters
-        ----------
-        U : np.ndarray
-            The state vector [h, hu] at each grid point where:
-            - U[0, :] represents the water height (h)
-            - U[1, :] represents the water momentum (h * u)
-
-        Returns
-        -------
-        float
-            The maximum wave speed across all grid points.
-        """
-        h = U[0, :]
-        hu = U[1, :]
-        u = np.zeros(len(h))
-        u[h > 1e-6] = hu[h > 1e-6] / h[h > 1e-6]
-        c = np.sqrt(FVM.g * h)
-        return np.max(np.abs(u) + c)
+        # Avoid division by zero for dry cells
+        u[U[0] > FVM.h_min] = U[1][U[0] > FVM.h_min] / U[0][U[0] > FVM.h_min]
+        return np.max(np.abs(u))

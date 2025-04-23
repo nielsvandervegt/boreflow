@@ -9,7 +9,9 @@ This Python package is developed as part of the Ph.D. research of Niels van der 
 To download the package run `pip install boreflow`
 
 ```py
-from boreflow import BCArray, Geometry, Simulation, Solver
+import numpy as np
+
+from boreflow import BCArray, Geometry, Simulation
 
 # 1) Create geometry
 geometry = Geometry([0, 2, 11], [3, 3, 0], [0.0175, 0.0175])
@@ -21,10 +23,10 @@ u = np.array([1.0, 2.0, 0])
 bc = BCArray(t, h, u)
 
 # 3) Initialize simulation settings
-sim = Simulation(t_end=10.0, cfl=0.5, max_dt=0.01, dx=0.1)
+sim = Simulation(t_end=10.0, cfl=0.2, max_dt=0.01, nx=110)
 
 # 4) Run the simulation
-results = sim.run(geometry, bc, Solver.EF_LLF)
+results = sim.run(geometry, bc)
 
 # 5) Analyse the flow, e.g. at s=10m
 res_t, res_h, res_u = results.get_st(s=10.0)

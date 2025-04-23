@@ -1,19 +1,46 @@
 from enum import Enum
 
 
-class Solver(Enum):
+class TimeIntegration(Enum):
     """
-    Enumeration of solvers used for solving the Shallow Water Equations (SSSWE).
-
-    This Enum defines different numerical solvers that can be used in the simulation, each with its specific time-stepping scheme.
+    Enumeration of time integration methods used for solving the Shallow Water Equations (SSSWE).
 
     Attributes
     ----------
-    EF_LLF
-        Euler Forward with Local Lax-Friedrichs flux.
-    RK4_LLF
-        Runge-Kutta 4th order with Local Lax-Friedrichs flux.
+    EF_LLF : int
+        Euler Forward (1st order) time-stepping method.
+    RK2_LLF : int
+        Runge-Kutta (2nd order) time-stepping method.
     """
 
-    EF_LLF = 0
-    RK4_LLF = 1
+    EF = 0
+    RK2 = 1
+
+
+class Flux(Enum):
+    """
+    Enumeration of flux types used for the calculation of fluxes in shallow water equations.
+
+    Attributes
+    ----------
+    HLL : int
+        Harten-Lax-van Leer (HLL) flux
+    """
+
+    HLL = 0
+
+
+class Limiter(Enum):
+    """
+    Enumeration of limiter types used for slope limiting in the numerical solution of the shallow water equations.
+
+    Attributes
+    ----------
+    minmod : int
+        Minmod limiter
+    vanLeer : int
+        Van Leer limiter
+    """
+
+    minmod = 0
+    vanLeer = 1
