@@ -12,4 +12,4 @@ from .enum import Flux, Limiter, TimeIntegration
 from .geometry import Geometry
 from .simulation import Simulation
 
-__all__ = ["BCArray", "BCOvertopping", "BCWOS", "BCWOSMillingen", "Geometry", "Simulation", "Flux" "Limiter", "TimeIntegration"]
+__all__ = ["BCArray", "BCOvertopping", "BCWOS", "BCWOSMillingen", "Geometry", "Simulation", "Flux", "Limiter", "TimeIntegration"]
