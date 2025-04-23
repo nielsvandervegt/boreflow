@@ -103,7 +103,7 @@ class FVM:
                 U = U + dt * k2
             else:
                 raise NotImplementedError()
-            
+
             # Save results
             self.geometry.t = np.concatenate((self.geometry.t, [t]))
             self.geometry.h = np.concatenate((self.geometry.h, [U[0, 1:-1]]), axis=0)
@@ -165,7 +165,6 @@ class FVM:
 
         # Apply limiter at each interface (2, ..., N-1)
         for i in range(len(U)):
-
             # Calculate r
             dL = U[i, 1:-1] - U[i, :-2]
             dR = U[i, 2:] - U[i, 1:-1]
@@ -177,22 +176,22 @@ class FVM:
             phi = np.zeros_like(dL)
             match limiter:
                 case Limiter.MC:
-                    phi = np.maximum(0, np.minimum(2*r, np.minimum(0.5*(1+r), 2)))
+                    phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
 
                 case Limiter.minmod:
                     phi = np.maximum(0, np.minimum(r, 1))
-                
+
                 case Limiter.superbee:
-                    phi = np.maximum(0, np.maximum(np.minimum(2*r, 1), np.minimum(r, 2)))
+                    phi = np.maximum(0, np.maximum(np.minimum(2 * r, 1), np.minimum(r, 2)))
 
                 case Limiter.vanLeer:
                     phi = (r + np.abs(r)) / (1 + np.abs(r))
-                
+
                 case _:
                     raise NotImplementedError()
-            
+
             deltaU[i, 1:-1] = phi * dR
-                
+
         return deltaU
 
     def hll_flux(self, UL, UR, alphaL, alphaR):

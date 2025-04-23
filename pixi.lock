@@ -789,7 +789,7 @@ packages:
 - pypi: src
   name: boreflow
   version: 0.0.3
-  sha256: ea8c804bd96671180608c3386c93237ab43a898f030b2c6b424c257ff926da8c
+  sha256: b038d1f492fc0ea7a07bb674048b452946e8397bd8778ceabda9d53f9d2ccf24
   requires_dist:
   - numpy
   - scipy
