@@ -7,9 +7,9 @@ class TimeIntegration(Enum):
 
     Attributes
     ----------
-    EF_LLF : int
+    EF : int
         Euler Forward (1st order) time-stepping method.
-    RK2_LLF : int
+    RK2 : int
         Runge-Kutta (2nd order) time-stepping method.
     """
 
