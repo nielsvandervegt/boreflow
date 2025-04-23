@@ -27,7 +27,7 @@ class BCArray(BCBase):
         """
         Initialize the boundary condition.
         """
-        mask = ~(np.isnan(h) | np.isnan(u) | (h < 0) | (u < 0))
+        mask = ~(np.isnan(np.array(h)) | np.isnan(np.array(u)) | (np.array(h) < 0) | (np.array(u) < 0))
         self.t = t[mask]
         self.h = h[mask]
         self.u = u[mask]
