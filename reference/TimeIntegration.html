@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Example of the BoreFlow package – BoreFlow</title>
+<title>timeintegration – BoreFlow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,22 +57,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -111,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">BoreFlow</span>
     </a>
   </div>
@@ -127,13 +127,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-examples">    
         <li>
-    <a class="dropdown-item" href="../../examples/notebooks/basic_example.html">
+    <a class="dropdown-item" href="../examples/notebooks/basic_example.html">
  <span class="dropdown-text">Example of the BoreFlow package</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../../reference/index.html"> 
+    <a class="nav-link" href="../reference/index.html"> 
 <span class="menu-text">Python API</span></a>
   </li>  
 </ul>
@@ -154,142 +154,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#boreflow.TimeIntegration" id="toc-boreflow.TimeIntegration" class="nav-link active" data-scroll-target="#boreflow.TimeIntegration">TimeIntegration</a>
+  <ul class="collapse">
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Example of the BoreFlow package</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Example calculation of a predefined flow on a horizontal surface and a steep slope.</p>
-<div id="cell-2" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> boreflow <span class="im">import</span> BCArray, Geometry, Simulation, Flux, Limiter, TimeIntegration</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="cell-3" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Create geometry</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">11</span>])  <span class="co"># X-coordinate x[i]</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.array([<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">0</span>])  <span class="co"># Elevation z[i] at x[i]</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> np.array([<span class="fl">0.0175</span>, <span class="fl">0.0175</span>])  <span class="co"># Manning roughness (n) between x[i] and x[i+1]</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>geometry <span class="op">=</span> Geometry(x, z, n)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the geometry</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.plot(x, z, color<span class="op">=</span><span class="st">"black"</span>, label<span class="op">=</span><span class="st">"Geometry"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.plot([x[<span class="dv">0</span>]], [z[<span class="dv">0</span>]], <span class="st">"o"</span>, color<span class="op">=</span><span class="st">"red"</span>, label<span class="op">=</span><span class="st">"Inflow"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.plot([x[<span class="op">-</span><span class="dv">1</span>]], [z[<span class="op">-</span><span class="dv">1</span>]], <span class="st">"o"</span>, color<span class="op">=</span><span class="st">"blue"</span>, label<span class="op">=</span><span class="st">"Free outflow"</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"x-coordinate [m]"</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"z-coordinate [m]"</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"equal"</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="basic_example_files/figure-html/cell-3-output-1.png" width="587" height="429" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="cell-4" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Create boundary conditions</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>])</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> np.array([<span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="dv">0</span>])</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.array([<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="dv">0</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>bc <span class="op">=</span> BCArray(t, h, u)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Initialize simulation settings</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> Simulation(t_end<span class="op">=</span><span class="fl">10.0</span>, cfl<span class="op">=</span><span class="fl">0.2</span>, max_dt<span class="op">=</span><span class="fl">0.01</span>, nx<span class="op">=</span><span class="dv">110</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4) Run the simulation</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> sim.run(geometry, bc, Limiter.minmod, Flux.HLL, TimeIntegration.EF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Simulating:   0%|          | 0.00/10.00 sSimulating:   7%|▋         | 0.67/10.00 sSimulating:  13%|█▎        | 1.33/10.00 sSimulating:  18%|█▊        | 1.80/10.00 sSimulating:  21%|██▏       | 2.14/10.00 sSimulating:  24%|██▍       | 2.40/10.00 sSimulating:  26%|██▌       | 2.60/10.00 sSimulating:  28%|██▊       | 2.78/10.00 sSimulating:  29%|██▉       | 2.92/10.00 sSimulating:  31%|███       | 3.05/10.00 sSimulating:  32%|███▏      | 3.17/10.00 sSimulating:  33%|███▎      | 3.29/10.00 sSimulating:  34%|███▍      | 3.39/10.00 sSimulating:  35%|███▌      | 3.50/10.00 sSimulating:  36%|███▌      | 3.61/10.00 sSimulating:  37%|███▋      | 3.71/10.00 sSimulating:  38%|███▊      | 3.82/10.00 sSimulating:  39%|███▉      | 3.93/10.00 sSimulating:  40%|████      | 4.05/10.00 sSimulating:  42%|████▏     | 4.16/10.00 sSimulating:  43%|████▎     | 4.27/10.00 sSimulating:  44%|████▍     | 4.38/10.00 sSimulating:  45%|████▌     | 4.50/10.00 sSimulating:  46%|████▌     | 4.62/10.00 sSimulating:  47%|████▋     | 4.74/10.00 sSimulating:  49%|████▊     | 4.87/10.00 sSimulating:  50%|████▉     | 5.00/10.00 sSimulating:  51%|█████▏    | 5.13/10.00 sSimulating:  53%|█████▎    | 5.26/10.00 sSimulating:  54%|█████▍    | 5.41/10.00 sSimulating:  56%|█████▌    | 5.56/10.00 sSimulating:  57%|█████▋    | 5.71/10.00 sSimulating:  59%|█████▉    | 5.88/10.00 sSimulating:  61%|██████    | 6.05/10.00 sSimulating:  62%|██████▏   | 6.24/10.00 sSimulating:  64%|██████▍   | 6.43/10.00 sSimulating:  66%|██████▋   | 6.64/10.00 sSimulating:  69%|██████▊   | 6.86/10.00 sSimulating:  71%|███████   | 7.11/10.00 sSimulating:  74%|███████▎  | 7.35/10.00 sSimulating:  76%|███████▋  | 7.64/10.00 sSimulating:  79%|███████▉  | 7.93/10.00 sSimulating:  83%|████████▎ | 8.26/10.00 sSimulating:  86%|████████▌ | 8.60/10.00 sSimulating:  90%|████████▉ | 8.96/10.00 sSimulating:  93%|█████████▎| 9.32/10.00 sSimulating:  97%|█████████▋| 9.68/10.00 sSimulating: 100%|██████████| 10.00/10.00 s</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simulation done in 5.63 sec</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-</div>
-<div id="cell-5" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot peak flow velocity and peak flow thickness</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fig, (ax0, ax1) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>[<span class="dv">9</span>, <span class="dv">4</span>])</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mark the transition between the horizontal surface and the sloped surface (x = 2m / s = 2m)</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>[ax.axvline(<span class="fl">2.0</span>, color<span class="op">=</span><span class="st">"grey"</span>, ls<span class="op">=</span><span class="st">":"</span>) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Get and plot peak flow characteristics</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>h, u <span class="op">=</span> results.get_peak_flow()</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>ax0.plot(results.s, h, color<span class="op">=</span><span class="st">"black"</span>)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ax1.plot(results.s, u, color<span class="op">=</span><span class="st">"black"</span>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot layout</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>[ax.set_xlabel(<span class="st">"Distance along geometry (s-coordinate) [m]"</span>) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>ax0.set_ylabel(<span class="st">"Peak flow thickness [m]"</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Peak depth-avg flow velocity [m/s]"</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>[ax.set_xlim(<span class="dv">0</span>, np.<span class="bu">max</span>(results.s)) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>[ax.set_ylim(<span class="dv">0</span>, <span class="va">None</span>) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Peak Flow Characteristics along Geometry"</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="basic_example_files/figure-html/cell-5-output-1.png" width="853" height="379" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="cell-6" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fig, (ax0, ax1) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>[<span class="dv">9</span>, <span class="dv">4</span>])</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get and plot the flow at s=5m</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>res_t, res_h, res_u <span class="op">=</span> results.get_st(s<span class="op">=</span><span class="fl">5.0</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ax0.plot(res_t, res_h, color<span class="op">=</span><span class="st">"black"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ax1.plot(res_t, res_u, color<span class="op">=</span><span class="st">"black"</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot layout</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>[ax.set_xlabel(<span class="st">"Time [s]"</span>) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ax0.set_ylabel(<span class="st">"Flow thickness [m]"</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Depth-avg flow velocity [m/s]"</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>[ax.set_xlim(<span class="dv">0</span>, np.<span class="bu">max</span>(res_t)) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>[ax.set_ylim(<span class="dv">0</span>, <span class="va">None</span>) <span class="cf">for</span> ax <span class="kw">in</span> [ax0, ax1]]</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Temporal Evolution of Flow at s = 5m"</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="basic_example_files/figure-html/cell-6-output-1.png" width="853" height="379" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
+<section id="boreflow.TimeIntegration" class="level1">
+<h1>TimeIntegration</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>TimeIntegration()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Enumeration of time integration methods used for solving the Shallow Water Equations (SSSWE).</p>
+<section id="attributes" class="level2 doc-section doc-section-attributes">
+<h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>EF_LLF</td>
+<td>int</td>
+<td>Euler Forward (1st order) time-stepping method.</td>
+</tr>
+<tr class="even">
+<td>RK2_LLF</td>
+<td>int</td>
+<td>Runge-Kutta (2nd order) time-stepping method.</td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

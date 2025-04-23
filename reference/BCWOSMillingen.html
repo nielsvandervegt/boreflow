@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>solver – BoreFlow</title>
+<title>bcwosmillingen – BoreFlow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -159,9 +159,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#boreflow.Solver" id="toc-boreflow.Solver" class="nav-link active" data-scroll-target="#boreflow.Solver">Solver</a>
+  <li><a href="#boreflow.BCWOSMillingen" id="toc-boreflow.BCWOSMillingen" class="nav-link active" data-scroll-target="#boreflow.BCWOSMillingen">BCWOSMillingen</a>
   <ul class="collapse">
   <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#boreflow.BCWOSMillingen.get_flow" id="toc-boreflow.BCWOSMillingen.get_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSMillingen.get_flow">get_flow</a></li>
+  <li><a href="#boreflow.BCWOSMillingen.optimize_flow" id="toc-boreflow.BCWOSMillingen.optimize_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSMillingen.optimize_flow">optimize_flow</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -172,18 +177,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="boreflow.Solver" class="level1">
-<h1>Solver</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Solver()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Enumeration of solvers used for solving the Shallow Water Equations (SSSWE).</p>
-<p>This Enum defines different numerical solvers that can be used in the simulation, each with its specific time-stepping scheme.</p>
+<section id="boreflow.BCWOSMillingen" class="level1">
+<h1>BCWOSMillingen</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen(<span class="va">self</span>, volume, tru_tovt<span class="op">=</span><span class="fl">0.0</span>, trh_tovt<span class="op">=</span><span class="fl">0.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Boundary condition for overtopping flow, based on fit observed at the first measurement location and the temporal flow profile of Hughes et al.&nbsp;(2012).</p>
 <section id="attributes" class="level2 doc-section doc-section-attributes">
 <h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 12%">
-<col style="width: 11%">
-<col style="width: 76%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 82%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -194,19 +198,146 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>EF_LLF</td>
-<td></td>
-<td>Euler Forward with Local Lax-Friedrichs flux.</td>
+<td>volume</td>
+<td>float</td>
+<td>The to be simulated individual overtopping volume</td>
 </tr>
 <tr class="even">
-<td>RK4_LLF</td>
+<td>u_peak</td>
+<td>float</td>
+<td>Peak flow velocity</td>
+</tr>
+<tr class="odd">
+<td>h_peak</td>
+<td>float</td>
+<td>Peak flow thickness</td>
+</tr>
+<tr class="even">
+<td>t_ovt</td>
+<td>float</td>
+<td>The total time of the overtopping event</td>
+</tr>
+<tr class="odd">
+<td>tru_tovt</td>
+<td>float</td>
+<td>Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)</td>
+</tr>
+<tr class="even">
+<td>trh_tovt</td>
+<td>float</td>
+<td>Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)</td>
+</tr>
+<tr class="odd">
+<td>coef</td>
+<td>float</td>
+<td>Coefficient optimized such that the integrated u(t) and h(t) equal the given volume</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#boreflow.BCWOSMillingen.get_flow">get_flow</a></td>
+<td>Compute (h, u) for time t based on current or given coef.</td>
+</tr>
+<tr class="even">
+<td><a href="#boreflow.BCWOSMillingen.optimize_flow">optimize_flow</a></td>
+<td>Optimize coefficient until time series of u(t) and h(t) match the given volume</td>
+</tr>
+</tbody>
+</table>
+<section id="boreflow.BCWOSMillingen.get_flow" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.BCWOSMillingen.get_flow">get_flow</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen.get_flow(t, coef<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Compute (h, u) for time t based on current or given coef.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 19%">
+<col style="width: 67%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>t</td>
+<td>Union[float, np.ndarray]</td>
+<td>Time as a float or array</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>coef</td>
+<td>float</td>
+<td>Coefficient, if None use the coefficient determined by the optimize_flow function (default: None)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
 <td></td>
-<td>Runge-Kutta 4th order with Local Lax-Friedrichs flux.</td>
+<td>np.ndarray</td>
+<td>2D array with (h, u) for t</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="boreflow.BCWOSMillingen.optimize_flow" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.BCWOSMillingen.optimize_flow">optimize_flow</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen.optimize_flow()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Optimize coefficient until time series of u(t) and h(t) match the given volume</p>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>float</td>
+<td>The optimized coefficient</td>
 </tr>
 </tbody>
 </table>
 
 
+</section>
+</section>
 </section>
 </section>
 
