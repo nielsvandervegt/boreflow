@@ -178,7 +178,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="boreflow.Simulation" class="level1">
 <h1>Simulation</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Simulation(<span class="va">self</span>, t_end<span class="op">=</span><span class="dv">10</span>, cfl<span class="op">=</span><span class="fl">0.5</span>, max_dt<span class="op">=</span><span class="fl">0.01</span>, nx<span class="op">=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Simulation(<span class="va">self</span>, t_end<span class="op">=</span><span class="dv">10</span>, cfl<span class="op">=</span><span class="fl">0.5</span>, max_dt<span class="op">=</span><span class="fl">0.01</span>, nx<span class="op">=</span><span class="dv">100</span>, verbose<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>A class to simulate a model using the Finite Volume Method (FVM).</p>
 <section id="attributes" class="level2 doc-section doc-section-attributes">
 <h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
@@ -225,6 +225,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>nx</td>
 <td>int</td>
 <td>Spatial grid resolution (default: 0.1m)</td>
+</tr>
+<tr class="odd">
+<td>verbose</td>
+<td>bool</td>
+<td>Flag to show the progress (default: True)</td>
 </tr>
 </tbody>
 </table>
