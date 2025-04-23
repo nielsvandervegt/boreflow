@@ -4,28 +4,21 @@
     "href": "examples/notebooks/basic_example.html",
     "title": "Example of the BoreFlow package",
     "section": "",
-    "text": "Example calculation of a predefined flow on a horizontal surface and a steep slope.\n\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nfrom boreflow import BCArray, Geometry, Simulation, Solver\n\n\n# 1) Create geometry\nx = np.array([0, 2, 11])  # X-coordinate x[i]\nz = np.array([3, 3, 0])  # Elevation z[i] at x[i]\nn = np.array([0.0175, 0.0175])  # Manning roughness (n) between x[i] and x[i+1]\ngeometry = Geometry(x, z, n)\n\n# Plot the geometry\nplt.figure()\nplt.plot(x, z, color=\"black\", label=\"Geometry\")\nplt.plot([x[0]], [z[0]], \"o\", color=\"red\", label=\"Inflow\")\nplt.plot([x[-1]], [z[-1]], \"o\", color=\"blue\", label=\"Free outflow\")\nplt.legend()\nplt.xlabel(\"x-coordinate [m]\")\nplt.ylabel(\"z-coordinate [m]\")\nplt.axis(\"equal\")\nplt.show()\n\n\n\n\n\n\n\n\n\n# 2) Create boundary conditions\nt = np.array([0, 1, 4])\nh = np.array([0.5, 0.8, 0])\nu = np.array([1.0, 2.0, 0])\nbc = BCArray(t, h, u)\n\n# 3) Initialize simulation settings\nsim = Simulation(t_end=10.0, cfl=0.5, max_dt=0.01, dx=0.1)\n\n# 4) Run the simulation\nresults = sim.run(geometry, bc, Solver.EF_LLF)\n\nPart #1:   0%|          | Simulated: 0.00/10.00 secPart #1:  20%|██        | Simulated: 2.02/10.00 secPart #1:  43%|████▎     | Simulated: 4.30/10.00 secPart #1:  65%|██████▌   | Simulated: 6.53/10.00 secPart #1:  88%|████████▊ | Simulated: 8.78/10.00 secPart #1: 100%|██████████| Simulated: 10.00/10.00 sec\nPart #2:   0%|          | Simulated: 0.00/10.00 secPart #2:   6%|▋         | Simulated: 0.63/10.00 secPart #2:  13%|█▎        | Simulated: 1.26/10.00 secPart #2:  19%|█▊        | Simulated: 1.87/10.00 secPart #2:  24%|██▍       | Simulated: 2.42/10.00 secPart #2:  29%|██▉       | Simulated: 2.90/10.00 secPart #2:  33%|███▎      | Simulated: 3.33/10.00 secPart #2:  37%|███▋      | Simulated: 3.74/10.00 secPart #2:  41%|████▏     | Simulated: 4.13/10.00 secPart #2:  45%|████▌     | Simulated: 4.53/10.00 secPart #2:  50%|████▉     | Simulated: 4.97/10.00 secPart #2:  54%|█████▍    | Simulated: 5.44/10.00 secPart #2:  60%|█████▉    | Simulated: 5.98/10.00 secPart #2:  66%|██████▌   | Simulated: 6.58/10.00 secPart #2:  72%|███████▏  | Simulated: 7.18/10.00 secPart #2:  78%|███████▊  | Simulated: 7.78/10.00 secPart #2:  84%|████████▎ | Simulated: 8.37/10.00 secPart #2:  90%|████████▉ | Simulated: 8.96/10.00 secPart #2:  95%|█████████▌| Simulated: 9.55/10.00 secPart #2: 100%|██████████| Simulated: 10.00/10.00 sec\n\n\nSimulation done in 2.51 sec\n\n\n\n\n\n\n# Plot peak flow velocity and peak flow thickness\nfig, (ax0, ax1) = plt.subplots(1, 2, figsize=[9, 4])\n\n# Mark the transition between the horizontal surface and the sloped surface (x = 2m / s = 2m)\n[ax.axvline(2.0, color=\"grey\", ls=\":\") for ax in [ax0, ax1]]\n\n# Get and plot peak flow characteristics\ns, h, u, _ = results.get_peak_flow_s()\nax0.plot(s, h, color=\"black\")\nax1.plot(s, u, color=\"black\")\n\n# Plot layout\n[ax.set_xlabel(\"Distance along geometry (s-coordinate) [m]\") for ax in [ax0, ax1]]\nax0.set_ylabel(\"Peak flow thickness [m]\")\nax1.set_ylabel(\"Peak depth-avg flow velocity [m/s]\")\n[ax.set_xlim(0, np.max(s)) for ax in [ax0, ax1]]\n[ax.set_ylim(0, None) for ax in [ax0, ax1]]\nfig.suptitle(\"Peak Flow Characteristics along Geometry\")\nfig.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\n\n# Plot\nfig, (ax0, ax1) = plt.subplots(1, 2, figsize=[9, 4])\n\n# Get and plot the flow at s=5m\nres_t, res_h, res_u = results.get_st(s=5.0)\nax0.plot(res_t, res_h, color=\"black\")\nax1.plot(res_t, res_u, color=\"black\")\n\n# Plot layout\n[ax.set_xlabel(\"Time [s]\") for ax in [ax0, ax1]]\nax0.set_ylabel(\"Flow thickness [m]\")\nax1.set_ylabel(\"Depth-avg flow velocity [m/s]\")\n[ax.set_xlim(0, np.max(res_t)) for ax in [ax0, ax1]]\n[ax.set_ylim(0, None) for ax in [ax0, ax1]]\nfig.suptitle(\"Temporal Evolution of Flow at s = 5m\")\nfig.tight_layout()\nplt.show()"
+    "text": "Example calculation of a predefined flow on a horizontal surface and a steep slope.\n\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nfrom boreflow import BCArray, Geometry, Simulation, Solver\n\n\n# 1) Create geometry\nx = np.array([0, 2, 11])  # X-coordinate x[i]\nz = np.array([3, 3, 0])  # Elevation z[i] at x[i]\nn = np.array([0.0175, 0.0175])  # Manning roughness (n) between x[i] and x[i+1]\ngeometry = Geometry(x, z, n)\n\n# Plot the geometry\nplt.figure()\nplt.plot(x, z, color=\"black\", label=\"Geometry\")\nplt.plot([x[0]], [z[0]], \"o\", color=\"red\", label=\"Inflow\")\nplt.plot([x[-1]], [z[-1]], \"o\", color=\"blue\", label=\"Free outflow\")\nplt.legend()\nplt.xlabel(\"x-coordinate [m]\")\nplt.ylabel(\"z-coordinate [m]\")\nplt.axis(\"equal\")\nplt.show()\n\n\n\n\n\n\n\n\n\n# 2) Create boundary conditions\nt = np.array([0, 1, 4])\nh = np.array([0.5, 0.8, 0])\nu = np.array([1.0, 2.0, 0])\nbc = BCArray(t, h, u)\n\n# 3) Initialize simulation settings\nsim = Simulation(t_end=10.0, cfl=0.5, max_dt=0.01, dx=0.1)\n\n# 4) Run the simulation\nresults = sim.run(geometry, bc, Solver.EF_LLF)\n\nPart #1:   0%|          | Simulated: 0.00/10.00 secPart #1:  22%|██▏       | Simulated: 2.20/10.00 secPart #1:  45%|████▍     | Simulated: 4.45/10.00 secPart #1:  67%|██████▋   | Simulated: 6.71/10.00 secPart #1:  90%|████████▉ | Simulated: 8.95/10.00 secPart #1: 100%|██████████| Simulated: 10.00/10.00 sec\nPart #2:   0%|          | Simulated: 0.00/10.00 secPart #2:   6%|▋         | Simulated: 0.63/10.00 secPart #2:  13%|█▎        | Simulated: 1.26/10.00 secPart #2:  19%|█▊        | Simulated: 1.87/10.00 secPart #2:  24%|██▍       | Simulated: 2.42/10.00 secPart #2:  29%|██▉       | Simulated: 2.90/10.00 secPart #2:  33%|███▎      | Simulated: 3.33/10.00 secPart #2:  37%|███▋      | Simulated: 3.74/10.00 secPart #2:  41%|████▏     | Simulated: 4.13/10.00 secPart #2:  45%|████▌     | Simulated: 4.53/10.00 secPart #2:  50%|████▉     | Simulated: 4.97/10.00 secPart #2:  54%|█████▍    | Simulated: 5.44/10.00 secPart #2:  60%|█████▉    | Simulated: 5.98/10.00 secPart #2:  66%|██████▌   | Simulated: 6.58/10.00 secPart #2:  72%|███████▏  | Simulated: 7.18/10.00 secPart #2:  78%|███████▊  | Simulated: 7.77/10.00 secPart #2:  84%|████████▎ | Simulated: 8.36/10.00 secPart #2:  89%|████████▉ | Simulated: 8.94/10.00 secPart #2:  95%|█████████▌| Simulated: 9.52/10.00 secPart #2: 100%|██████████| Simulated: 10.00/10.00 sec\n\n\nSimulation done in 2.51 sec\n\n\n\n\n\n\n# Plot peak flow velocity and peak flow thickness\nfig, (ax0, ax1) = plt.subplots(1, 2, figsize=[9, 4])\n\n# Mark the transition between the horizontal surface and the sloped surface (x = 2m / s = 2m)\n[ax.axvline(2.0, color=\"grey\", ls=\":\") for ax in [ax0, ax1]]\n\n# Get and plot peak flow characteristics\ns, h, u, _ = results.get_peak_flow_s()\nax0.plot(s, h, color=\"black\")\nax1.plot(s, u, color=\"black\")\n\n# Plot layout\n[ax.set_xlabel(\"Distance along geometry (s-coordinate) [m]\") for ax in [ax0, ax1]]\nax0.set_ylabel(\"Peak flow thickness [m]\")\nax1.set_ylabel(\"Peak depth-avg flow velocity [m/s]\")\n[ax.set_xlim(0, np.max(s)) for ax in [ax0, ax1]]\n[ax.set_ylim(0, None) for ax in [ax0, ax1]]\nfig.suptitle(\"Peak Flow Characteristics along Geometry\")\nfig.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\n\n# Plot\nfig, (ax0, ax1) = plt.subplots(1, 2, figsize=[9, 4])\n\n# Get and plot the flow at s=5m\nres_t, res_h, res_u = results.get_st(s=5.0)\nax0.plot(res_t, res_h, color=\"black\")\nax1.plot(res_t, res_u, color=\"black\")\n\n# Plot layout\n[ax.set_xlabel(\"Time [s]\") for ax in [ax0, ax1]]\nax0.set_ylabel(\"Flow thickness [m]\")\nax1.set_ylabel(\"Depth-avg flow velocity [m/s]\")\n[ax.set_xlim(0, np.max(res_t)) for ax in [ax0, ax1]]\n[ax.set_ylim(0, None) for ax in [ax0, ax1]]\nfig.suptitle(\"Temporal Evolution of Flow at s = 5m\")\nfig.tight_layout()\nplt.show()"
   },
   {
-    "objectID": "reference/BCWOS.html",
-    "href": "reference/BCWOS.html",
-    "title": "BCWOS",
+    "objectID": "reference/Solver.html",
+    "href": "reference/Solver.html",
+    "title": "Solver",
     "section": "",
-    "text": "BCWOS(self, volume, tru_tovt=0.0, trh_tovt=0.0)\nBoundary condition for overtopping flow, based on empirical formulas from van der Meer et al. (2011) and Hughes et al. (2012).\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume\n\n\n\n\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCWOS.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCWOS.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+    "text": "Solver()\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\nThis Enum defines different numerical solvers that can be used in the simulation, each with its specific time-stepping scheme.\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nEF_LLF\n\nEuler Forward with Local Lax-Friedrichs flux.\n\n\nRK4_LLF\n\nRunge-Kutta 4th order with Local Lax-Friedrichs flux."
   },
   {
-    "objectID": "reference/BCWOS.html#attributes",
-    "href": "reference/BCWOS.html#attributes",
-    "title": "BCWOS",
+    "objectID": "reference/Solver.html#attributes",
+    "href": "reference/Solver.html#attributes",
+    "title": "Solver",
     "section": "",
-    "text": "Name\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume"
-  },
-  {
-    "objectID": "reference/BCWOS.html#methods",
-    "href": "reference/BCWOS.html#methods",
-    "title": "BCWOS",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCWOS.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCWOS.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+    "text": "Name\nType\nDescription\n\n\n\n\nEF_LLF\n\nEuler Forward with Local Lax-Friedrichs flux.\n\n\nRK4_LLF\n\nRunge-Kutta 4th order with Local Lax-Friedrichs flux."
   },
   {
     "objectID": "reference/Geometry.html",
@@ -49,27 +42,6 @@
     "text": "Name\nDescription\n\n\n\n\ncheck_geometry\nValidates the consistency of the geometry input arrays.\n\n\nget_peak_flow_s\nGet the peak flow characteristics along the geometry (s-coordinate)\n\n\nget_peak_flow_x\nGet the peak flow characteristics along the x-coordinate.\n\n\nget_st\nGet the time series of flow variables at a specific s-location along the slope.\n\n\nget_xt\nGet the time series of flow variables at a specific x-location.\n\n\n\n\n\nGeometry.check_geometry(geometry_x, geometry_z, geometry_n)\nValidates the consistency of the geometry input arrays.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ngeometry_x\nnp.ndarray\nArray of x-coordinates.\nrequired\n\n\ngeometry_z\nnp.ndarray\nArray of z-coordinates.\nrequired\n\n\ngeometry_n\nnp.ndarray\nArray of Manning’s n values.\nrequired\n\n\n\n\n\n\n\nGeometry.get_peak_flow_s(get_h_perpendicular=True)\nGet the peak flow characteristics along the geometry (s-coordinate)\n\n\nget_h_perpendicular : bool Whether to compute the perpendicular flow thickness (default is True).\n\n\n\nnp.ndarray Numpy 2D array with [s, hpeak, upeak, ufront]\n\n\n\n\nGeometry.get_peak_flow_x(get_h_perpendicular=True)\nGet the peak flow characteristics along the x-coordinate.\n\n\nget_h_perpendicular : bool Whether to compute the perpendicular flow thickness (default is True).\n\n\n\nnp.ndarray Numpy 2D array with [x, hpeak, upeak, ufront]\n\n\n\n\nGeometry.get_st(s, get_h_perpendicular=True)\nGet the time series of flow variables at a specific s-location along the slope.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ns\nfloat\nThe slope-based coordinate (distance along the geometry).\nrequired\n\n\nget_h_perpendicular\nbool\nWhether to compute the perpendicular flow thickness (default is True).\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray or None\nA np.ndarray containing the time series at location x, or None if x is outside the modeled domain.\n\n\n\n\n\n\n\nGeometry.get_xt(x, get_h_perpendicular=True)\nGet the time series of flow variables at a specific x-location.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nx\nfloat\nThe x-coordinate at which to retrieve the time series.\nrequired\n\n\nget_h_perpendicular\nbool\nWhether to compute the perpendicular water depth (default is True).\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray or None\nA np.ndarray containing the time series [t, h, u] at location x, or None if x is outside the modeled domain."
   },
   {
-    "objectID": "reference/index.html",
-    "href": "reference/index.html",
-    "title": "API Reference",
-    "section": "",
-    "text": "BCArray\nBoundary condition based on pre-defined (t, h, u) arrays.\n\n\nBCOvertopping\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nBCWOS\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nSolver\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\n\n\nGeometry\nRepresents a discretized 1D geometry composed of multiple connected geometry parts,\n\n\nSimulation\nA class to simulate a model using the Finite Volume Method (FVM)."
-  },
-  {
-    "objectID": "reference/index.html#boreflow",
-    "href": "reference/index.html#boreflow",
-    "title": "API Reference",
-    "section": "",
-    "text": "BCArray\nBoundary condition based on pre-defined (t, h, u) arrays.\n\n\nBCOvertopping\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nBCWOS\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nSolver\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\n\n\nGeometry\nRepresents a discretized 1D geometry composed of multiple connected geometry parts,\n\n\nSimulation\nA class to simulate a model using the Finite Volume Method (FVM)."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "BoreFlow",
-    "section": "",
-    "text": "The Python package ‘boreflow’ provides a simple numerical model using Steep-Slope Shallow Water Equations to describe the flow of overtopping waves and bores.\nThis Python package is developed as part of the Ph.D. research of Niels van der Vegt and is published under the GNU GPL-3 license."
-  },
-  {
     "objectID": "reference/BCArray.html",
     "href": "reference/BCArray.html",
     "title": "BCArray",
@@ -91,18 +63,60 @@
     "text": "Name\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t.\n\n\n\n\n\nBCArray.get_flow(t)\nCompute (h, u) for time t.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t"
   },
   {
-    "objectID": "reference/Solver.html",
-    "href": "reference/Solver.html",
-    "title": "Solver",
+    "objectID": "reference/BCOvertopping.html",
+    "href": "reference/BCOvertopping.html",
+    "title": "BCOvertopping",
     "section": "",
-    "text": "Solver()\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\nThis Enum defines different numerical solvers that can be used in the simulation, each with its specific time-stepping scheme.\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nEF_LLF\n\nEuler Forward with Local Lax-Friedrichs flux.\n\n\nRK4_LLF\n\nRunge-Kutta 4th order with Local Lax-Friedrichs flux."
+    "text": "BCOvertopping(self, volume, cota, tru_tovt=0.05, trh_tovt=0.13, unc_ppf=0.5)\nBoundary condition for overtopping flow, based on empirical formulas from van der Meer et al. (2011), van Damme (2016), and Hughes et al. (2012), with uncertainty from van der Vegt et al. (2025).\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\ncota\nfloat\nWaterside slope of the dike (1:cota).\n\n\nunc_ppf\nfloat\nPercent point function (quantile) for uncertainty (default: 0.5).\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume\n\n\n\n\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCOvertopping.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCOvertopping.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
   },
   {
-    "objectID": "reference/Solver.html#attributes",
-    "href": "reference/Solver.html#attributes",
-    "title": "Solver",
+    "objectID": "reference/BCOvertopping.html#attributes",
+    "href": "reference/BCOvertopping.html#attributes",
+    "title": "BCOvertopping",
     "section": "",
-    "text": "Name\nType\nDescription\n\n\n\n\nEF_LLF\n\nEuler Forward with Local Lax-Friedrichs flux.\n\n\nRK4_LLF\n\nRunge-Kutta 4th order with Local Lax-Friedrichs flux."
+    "text": "Name\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\ncota\nfloat\nWaterside slope of the dike (1:cota).\n\n\nunc_ppf\nfloat\nPercent point function (quantile) for uncertainty (default: 0.5).\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume"
+  },
+  {
+    "objectID": "reference/BCOvertopping.html#methods",
+    "href": "reference/BCOvertopping.html#methods",
+    "title": "BCOvertopping",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCOvertopping.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCOvertopping.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+  },
+  {
+    "objectID": "reference/BCWOS.html",
+    "href": "reference/BCWOS.html",
+    "title": "BCWOS",
+    "section": "",
+    "text": "BCWOS(self, volume, tru_tovt=0.0, trh_tovt=0.0)\nBoundary condition for overtopping flow, based on empirical formulas from van der Meer et al. (2011) and Hughes et al. (2012).\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume\n\n\n\n\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCWOS.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCWOS.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+  },
+  {
+    "objectID": "reference/BCWOS.html#attributes",
+    "href": "reference/BCWOS.html#attributes",
+    "title": "BCWOS",
+    "section": "",
+    "text": "Name\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume"
+  },
+  {
+    "objectID": "reference/BCWOS.html#methods",
+    "href": "reference/BCWOS.html#methods",
+    "title": "BCWOS",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCWOS.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCWOS.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+  },
+  {
+    "objectID": "reference/index.html",
+    "href": "reference/index.html",
+    "title": "API Reference",
+    "section": "",
+    "text": "BCArray\nBoundary condition based on pre-defined (t, h, u) arrays.\n\n\nBCOvertopping\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nBCWOS\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nSolver\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\n\n\nGeometry\nRepresents a discretized 1D geometry composed of multiple connected geometry parts,\n\n\nSimulation\nA class to simulate a model using the Finite Volume Method (FVM)."
+  },
+  {
+    "objectID": "reference/index.html#boreflow",
+    "href": "reference/index.html#boreflow",
+    "title": "API Reference",
+    "section": "",
+    "text": "BCArray\nBoundary condition based on pre-defined (t, h, u) arrays.\n\n\nBCOvertopping\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nBCWOS\nBoundary condition for overtopping flow, based on empirical formulas\n\n\nSolver\nEnumeration of solvers used for solving the Shallow Water Equations (SSSWE).\n\n\nGeometry\nRepresents a discretized 1D geometry composed of multiple connected geometry parts,\n\n\nSimulation\nA class to simulate a model using the Finite Volume Method (FVM)."
   },
   {
     "objectID": "reference/Simulation.html",
@@ -126,24 +140,10 @@
     "text": "Name\nDescription\n\n\n\n\nrun\nRun the simulation using the provided geometry, boundary conditions, and solver.\n\n\n\n\n\nSimulation.run(geometry, bc, solver=Solver.EF_LLF)\nRun the simulation using the provided geometry, boundary conditions, and solver.\nThe simulation involves discretizing the geometry, applying the Finite Volume Method (FVM), and computing the wetting front velocity for each geometry part. The simulation runs until the end time is reached or the conditions specified by the solver are satisfied.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ngeometry\nGeometry\nGeometry object representing the physical domain for the simulation.\nrequired\n\n\nbc\nBCBase\nBoundary conditions for the simulation.\nrequired\n\n\nsolver\nSolver\nThe solver to use for the simulation. The default is Solver.EF_LLF (Euler Forward with Local Lax-Friedrichs).\nSolver.EF_LLF\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nGeometry\nA new copy of the geometry object with the simulation results."
   },
   {
-    "objectID": "reference/BCOvertopping.html",
-    "href": "reference/BCOvertopping.html",
-    "title": "BCOvertopping",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "BoreFlow",
     "section": "",
-    "text": "BCOvertopping(self, volume, cota, tru_tovt=0.05, trh_tovt=0.13, unc_ppf=0.5)\nBoundary condition for overtopping flow, based on empirical formulas from van der Meer et al. (2011), van Damme (2016), and Hughes et al. (2012), with uncertainty from van der Vegt et al. (2025).\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\ncota\nfloat\nWaterside slope of the dike (1:cota).\n\n\nunc_ppf\nfloat\nPercent point function (quantile) for uncertainty (default: 0.5).\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume\n\n\n\n\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCOvertopping.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCOvertopping.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
-  },
-  {
-    "objectID": "reference/BCOvertopping.html#attributes",
-    "href": "reference/BCOvertopping.html#attributes",
-    "title": "BCOvertopping",
-    "section": "",
-    "text": "Name\nType\nDescription\n\n\n\n\nvolume\nfloat\nThe to be simulated individual overtopping volume\n\n\ncota\nfloat\nWaterside slope of the dike (1:cota).\n\n\nunc_ppf\nfloat\nPercent point function (quantile) for uncertainty (default: 0.5).\n\n\nu_peak\nfloat\nPeak flow velocity\n\n\nh_peak\nfloat\nPeak flow thickness\n\n\nt_ovt\nfloat\nThe total time of the overtopping event\n\n\ntru_tovt\nfloat\nRatio between the time of upeak and the overtopping time (tovt) (default: 0.0)\n\n\ntrh_tovt\nfloat\nRatio between the time of hpeak and the overtopping time (tovt) (default: 0.0)\n\n\ncoef\nfloat\nCoefficient optimized such that the integrated u(t) and h(t) equal the given volume"
-  },
-  {
-    "objectID": "reference/BCOvertopping.html#methods",
-    "href": "reference/BCOvertopping.html#methods",
-    "title": "BCOvertopping",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nget_flow\nCompute (h, u) for time t based on current or given coef.\n\n\noptimize_flow\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nBCOvertopping.get_flow(t, coef=None)\nCompute (h, u) for time t based on current or given coef.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nt\nUnion[float, np.ndarray]\nTime as a float or array\nrequired\n\n\ncoef\nfloat\nCoefficient, if None use the coefficient determined by the optimize_flow function (default: None)\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nnp.ndarray\n2D array with (h, u) for t\n\n\n\n\n\n\n\nBCOvertopping.optimize_flow()\nOptimize coefficient until time series of u(t) and h(t) match the given volume\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nfloat\nThe optimized coefficient"
+    "text": "The Python package ‘boreflow’ provides a simple numerical model using Steep-Slope Shallow Water Equations to describe the flow of overtopping waves and bores.\nThis Python package is developed as part of the Ph.D. research of Niels van der Vegt and is published under the GNU GPL-3 license."
   }
 ]
