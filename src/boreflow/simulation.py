@@ -25,6 +25,8 @@ class Simulation:
         Maximum time step size (default: 0.01s)
     nx : int
         Spatial grid resolution (default: 0.1m)
+    verbose : bool
+        Flag to show the progress (default: True)
     """
 
     # Default
@@ -35,7 +37,7 @@ class Simulation:
     max_dt: float
     nx: int
 
-    def __init__(self, t_end: float = 10, cfl: float = 0.5, max_dt: float = 0.01, nx: int = 100) -> None:
+    def __init__(self, t_end: float = 10, cfl: float = 0.5, max_dt: float = 0.01, nx: int = 100, verbose: bool = True) -> None:
         """
         Initialize simulation time and spatial parameters
         """
@@ -43,6 +45,7 @@ class Simulation:
         self.max_dt = max_dt
         self.nx = nx
         self.cfl = cfl
+        self.verbose = verbose
 
     def run(
         self,
@@ -90,7 +93,7 @@ class Simulation:
         start_time = time()
 
         # Run for each geometry part
-        fvm = FVM(bc, self.t_end, self.max_dt, self.cfl)
+        fvm = FVM(bc, self.t_end, self.max_dt, self.cfl, self.verbose)
         fvm.discretise(geometry, self.nx)
         fvm.run(limiter, flux, timeintegration)
         geometry.derive_front_velocity()
@@ -98,6 +101,7 @@ class Simulation:
         # Finish
         geometry.simulated = True
         geometry.simulation_time = time() - start_time
-        print(f"Simulation done in {geometry.simulation_time:.2f} sec")
+        if self.verbose:
+            print(f"Simulation done in {geometry.simulation_time:.2f} sec")
 
         return geometry

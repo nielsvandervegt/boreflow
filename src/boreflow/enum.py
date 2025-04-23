@@ -36,11 +36,17 @@ class Limiter(Enum):
 
     Attributes
     ----------
+    MC : int
+        Monotonized Central (MC) limiter
     minmod : int
         Minmod limiter
+    superbee : int
+        Superbee limiter
     vanLeer : int
         Van Leer limiter
     """
 
-    minmod = 0
-    vanLeer = 1
+    MC = 0
+    minmod = 1
+    superbee = 2
+    vanLeer = 3

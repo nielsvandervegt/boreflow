@@ -28,12 +28,13 @@ class FVM:
     cfl: float
 
     # Other
+    verbose: bool
     g: float = 9.81
     first_dt: float = 1e-6
-    h_wet: float = 1e-3  # h < h_min is assumed to be dry
+    h_wet: float = 1e-3
     h_min: float = 1e-6
 
-    def __init__(self, boundary_condition: BCBase, t_end: float, max_dt: float, cfl: float):
+    def __init__(self, boundary_condition: BCBase, t_end: float, max_dt: float, cfl: float, verbose: bool):
         """
         Initialize FVM solver
         """
@@ -42,6 +43,7 @@ class FVM:
         self.t_end = t_end
         self.max_dt = max_dt
         self.cfl = cfl
+        self.verbose = verbose
 
     def discretise(self, geometry: Geometry, nx: int):
         # Save
@@ -72,7 +74,8 @@ class FVM:
     def run(self, limiter: Limiter, flux: Flux, timeintegration: TimeIntegration):
         """"""
         # Progress bar
-        pbar = tqdm(total=self.t_end, desc="Simulating", bar_format="{l_bar}{bar}| {n:.2f}/{total:.2f} s")
+        if self.verbose:
+            pbar = tqdm(total=self.t_end, desc="Simulating", bar_format="{l_bar}{bar}| {n:.2f}/{total:.2f} s")
 
         # Initial conditions: Empty cells + ghost cells
         U = np.zeros((2, self.nx + 2))
@@ -100,7 +103,7 @@ class FVM:
                 U = U + dt * k2
             else:
                 raise NotImplementedError()
-
+            
             # Save results
             self.geometry.t = np.concatenate((self.geometry.t, [t]))
             self.geometry.h = np.concatenate((self.geometry.h, [U[0, 1:-1]]), axis=0)
@@ -108,16 +111,22 @@ class FVM:
             self.geometry.u = np.concatenate((self.geometry.u, [u]), axis=0)
 
             # Update progress bar and increase time
-            pbar.update(dt)
+            if self.verbose:
+                pbar.update(dt)
             t += dt
 
         # Calculate water depth perpendicular to slope
         self.geometry.h_s = self.geometry.h * np.cos(self.alpha_cells[1:-1])
 
         # Close progress bar
-        pbar.close()
+        if self.verbose:
+            pbar.close()
 
     def compute_rhs(self, t: float, U: np.ndarray, limiter: Limiter, flux: Flux):
+        # 0) Make cells with water depths smaller than self.h_wet dry
+        U[0, U[0, :] < self.h_wet] = 0.0
+        U[1, U[0, :] < self.h_wet] = 0.0
+
         # 1) Add boundary conditions
         _h, _u = self.bc_left.get_flow(t).T[0]
         U[:, 0] = np.array([_h, _h * _u]) if _h > self.h_min else np.array([0.0, 0.0])
@@ -151,24 +160,39 @@ class FVM:
 
     def limiter(self, U: np.ndarray, limiter: Limiter):
         """"""
-        # Create an empty deltaU
+        # Init empty deltaU
         deltaU = np.zeros_like(U)
 
         # Apply limiter at each interface (2, ..., N-1)
         for i in range(len(U)):
+
+            # Calculate r
             dL = U[i, 1:-1] - U[i, :-2]
             dR = U[i, 2:] - U[i, 1:-1]
-            if limiter == Limiter.minmod:
-                deltaU[i, 1:-1] = np.where(dL * dR > 0, np.sign(dL) * np.minimum(np.abs(dL), np.abs(dR)), 0.0)
-            elif limiter == Limiter.vanLeer:
-                _limiter = np.zeros_like(deltaU[i, 1:-1])
-                _mask = dL * dR > 0
-                _limiter[_mask] = 2 * dL[_mask] * dR[_mask] / (dL[_mask] + dR[_mask])
-                deltaU[i, 1:-1] = _limiter
-            else:
-                raise NotImplementedError()
+            r = np.zeros_like(dL)
+            mask = dL * dR > 0
+            r[mask] = dL[mask] / dR[mask]
 
-        # Return
+            # Apply the right limiter
+            phi = np.zeros_like(dL)
+            match limiter:
+                case Limiter.MC:
+                    phi = np.maximum(0, np.minimum(2*r, np.minimum(0.5*(1+r), 2)))
+
+                case Limiter.minmod:
+                    phi = np.maximum(0, np.minimum(r, 1))
+                
+                case Limiter.superbee:
+                    phi = np.maximum(0, np.maximum(np.minimum(2*r, 1), np.minimum(r, 2)))
+
+                case Limiter.vanLeer:
+                    phi = (r + np.abs(r)) / (1 + np.abs(r))
+                
+                case _:
+                    raise NotImplementedError()
+            
+            deltaU[i, 1:-1] = phi * dR
+                
         return deltaU
 
     def hll_flux(self, UL, UR, alphaL, alphaR):

@@ -201,7 +201,7 @@ class Geometry:
         # Return
         return self.get_xt(_x, get_h_perpendicular)
 
-    def get_peak_flow(self, get_h_perpendicular: bool = True) -> np.ndarray:
+    def get_peak_flow(self, get_h_perpendicular: bool = True, quantile: float = 1.0) -> np.ndarray:
         """
         Get the peak flow characteristics along the x-coordinate.
 
@@ -209,6 +209,8 @@ class Geometry:
         ----------
         get_h_perpendicular : bool
             Whether to compute the perpendicular flow thickness (default is True).
+        quantile : float, optional
+            Get the quantiles, quantile=1 is the maximum values (default: 1.0)
 
         Returns:
         -------
@@ -221,5 +223,7 @@ class Geometry:
 
         # Choose the height array (perpendicular or horizontal)
         _h = self.h_s if get_h_perpendicular else self.h
+        _hpeak = np.quantile(_h, quantile, axis=0)
+        _upeak = np.quantile(self.u, quantile, axis=0)
 
-        return np.array([np.max(_h, axis=0), np.max(self.u, axis=0)])
+        return np.array([_hpeak, _upeak])
