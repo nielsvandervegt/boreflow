@@ -175,6 +175,9 @@ class FVM:
             # Apply the right limiter
             phi = np.zeros_like(dL)
             match limiter:
+                case Limiter.Koren:
+                    phi = np.maximum(0, np.minimum(2 * r, np.minimum((1 + 2 * r) / 3, 2)))
+
                 case Limiter.MC:
                     phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
 
@@ -183,6 +186,9 @@ class FVM:
 
                 case Limiter.superbee:
                     phi = np.maximum(0, np.maximum(np.minimum(2 * r, 1), np.minimum(r, 2)))
+
+                case Limiter.vanAlbada:
+                    phi = (r**2 + r) / (r**2 + 1)
 
                 case Limiter.vanLeer:
                     phi = (r + np.abs(r)) / (1 + np.abs(r))
