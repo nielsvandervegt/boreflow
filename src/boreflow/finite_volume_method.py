@@ -20,7 +20,6 @@ class FVM:
     x_cells: np.ndarray
     z_cells: np.ndarray
     n_cells: np.ndarray
-    x_interfaces: np.ndarray
 
     # Simulation parameters
     t_end: float
@@ -83,6 +82,7 @@ class FVM:
         # Time stepping
         t = 0.0
         while t < self.t_end:
+
             # CFL to determine dt
             max_speed = np.maximum(self.compute_max_velocity(U), 1e-8)
             dt = np.min([self.cfl * self.dx / max_speed, self.max_dt])
@@ -123,13 +123,10 @@ class FVM:
             pbar.close()
 
     def compute_rhs(self, t: float, U: np.ndarray, limiter: Limiter, flux: Flux):
-        # 0) Make cells with water depths smaller than self.h_wet dry
-        U[0, U[0, :] < self.h_wet] = 0.0
-        U[1, U[0, :] < self.h_wet] = 0.0
 
         # 1) Add boundary conditions
         _h, _u = self.bc_left.get_flow(t).T[0]
-        U[:, 0] = np.array([_h, _h * _u]) if _h > self.h_min else np.array([0.0, 0.0])
+        U[:, 0] = np.array([_h, _h * _u])
         U[:, -1] = U[:, -2]
 
         # 2) Apply limiter to interior cells
@@ -142,13 +139,10 @@ class FVM:
         alphaL = self.alpha_cells[:-1] + 0.5 * deltaAlpha[:-1]
         alphaR = self.alpha_cells[1:] - 0.5 * deltaAlpha[1:]
 
-        # 4) Calculate flux
+        # 4) Calculate flux at each interface
         F = np.zeros_like(UL)
-        if flux == Flux.HLL:
-            for i in range(len(F[0])):
-                F[:, i] = self.hll_flux(UL[:, i], UR[:, i], alphaL[i], alphaR[i])
-        else:
-            raise NotImplementedError()
+        for i in range(len(F[0])):
+            F[:, i] = self.flux(flux, UL[:, i], UR[:, i], alphaL[i], alphaR[i])
 
         # 5) Calculate source
         S = self.source_term(U)
@@ -165,6 +159,7 @@ class FVM:
 
         # Apply limiter at each interface (2, ..., N-1)
         for i in range(len(U)):
+
             # Calculate r
             dL = U[i, 1:-1] - U[i, :-2]
             dR = U[i, 2:] - U[i, 1:-1]
@@ -180,6 +175,13 @@ class FVM:
 
                 case Limiter.MC:
                     phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
+                
+                case Limiter.MC_minmod:
+                    phi = np.where(
+                        U[0, 1:-1] < 0.01,
+                        np.maximum(0, np.minimum(r, 1)),
+                        np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
+                    )
 
                 case Limiter.minmod:
                     phi = np.maximum(0, np.minimum(r, 1))
@@ -192,6 +194,13 @@ class FVM:
 
                 case Limiter.vanLeer:
                     phi = (r + np.abs(r)) / (1 + np.abs(r))
+                
+                case Limiter.vanLeer_minmod:
+                    phi = np.where(
+                        U[0, 1:-1] < 0.01,
+                        np.maximum(0, np.minimum(r, 1)),
+                        (r + np.abs(r)) / (1 + np.abs(r))
+                    )
 
                 case _:
                     raise NotImplementedError()
@@ -200,7 +209,7 @@ class FVM:
 
         return deltaU
 
-    def hll_flux(self, UL, UR, alphaL, alphaR):
+    def flux(self, flux: Flux, UL, UR, alphaL, alphaR):
         # Get h and u
         hL, huL = UL
         hR, huR = UR
@@ -230,28 +239,45 @@ class FVM:
         # Calculate wave speeds
         cL = np.sqrt(self.g * hL) * np.cos(alphaL)
         cR = np.sqrt(self.g * hR) * np.cos(alphaR)
-        sL = np.minimum(uL * np.cos(alphaL) - cL, uR * np.cos(alphaR) - cR)
-        sR = np.maximum(uL * np.cos(alphaL) + cL, uR * np.cos(alphaR) + cR)
+        sL = np.min([uL * np.cos(alphaL) - cL, uR * np.cos(alphaR) - cR, 0])
+        sR = np.max([uL * np.cos(alphaL) + cL, uR * np.cos(alphaR) + cR, 0])
 
         # Left and right flux
-        FL = np.array([hL * uL * np.cos(alphaL), (hL * uL**2 + 0.5 * self.g * hL**2 * np.cos(alphaL) ** 2) * np.cos(alphaL)])
-        FR = np.array([hR * uR * np.cos(alphaR), (hR * uR**2 + 0.5 * self.g * hR**2 * np.cos(alphaR) ** 2) * np.cos(alphaR)])
+        FL = np.array([
+            hL * uL * np.cos(alphaL), 
+            (hL * uL**2 + 0.5 * self.g * hL**2 * np.cos(alphaL)**2) * np.cos(alphaL)
+        ])
+        FR = np.array([
+            hR * uR * np.cos(alphaR), 
+            (hR * uR**2 + 0.5 * self.g * hR**2 * np.cos(alphaR)**2) * np.cos(alphaR)
+        ])
 
-        # HLL
-        if sL > 0:
-            return FL
-        elif sR < 0:
-            return FR
+        # Rusanov Flux
+        if flux == Flux.Rusanov:
+            s_max = np.maximum(np.abs(uL) + cL, np.abs(uR) + cR)
+            return 0.5 * (FL + FR) - 0.5 * s_max * (UR - UL)
+
+        # HLL Flux
+        elif flux == Flux.HLL:
+            if sL > 0:
+                return FL
+            elif sR < 0:
+                return FR
+            else:
+                return (sR * FL - sL * FR + sL * sR * (UR - UL)) / (sR - sL)
+        
+        # Unknown
         else:
-            return (sR * FL - sL * FR + sL * sR * (UR - UL)) / (sR - sL)
+            raise NotImplementedError("Unknown Flux")
 
     def source_term(self, U):
-        # Dry
+        # Obtain
         h, hu = U
 
         # Calculate Source Terms (Momentum only)
         source_term = np.zeros((2, self.nx + 2))
         for i in range(1, self.nx + 1):  # Avoid ghost cells
+            
             # Apply dry conditions
             if h[i] <= self.h_wet:
                 source_term[1, i] = 0.0

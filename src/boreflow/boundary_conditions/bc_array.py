@@ -27,10 +27,15 @@ class BCArray(BCBase):
         """
         Initialize the boundary condition.
         """
-        mask = ~(np.isnan(h) | np.isnan(u) | (h < 0) | (u < 0))
-        self.t = t[mask]
-        self.h = h[mask]
-        self.u = u[mask]
+        self.t = np.array(t)
+        self.h = np.array(h)
+        self.u = np.array(u)
+
+        # Mask
+        mask = ~(np.isnan(self.h) | np.isnan(self.u) | (self.h < 0) | (self.u < 0))
+        self.t = self.t[mask]
+        self.h = self.h[mask]
+        self.u = self.u[mask]
 
     def get_flow(self, t: Union[float, np.ndarray]) -> np.ndarray:
         """

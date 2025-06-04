@@ -23,11 +23,14 @@ class Flux(Enum):
 
     Attributes
     ----------
+    Rusanov : int
+        Rusanov flux
     HLL : int
         Harten-Lax-van Leer (HLL) flux
     """
 
-    HLL = 0
+    Rusanov = 0
+    HLL = 1
 
 
 class Limiter(Enum):
@@ -56,3 +59,5 @@ class Limiter(Enum):
     superbee = 3
     vanAlbada = 4
     vanLeer = 5
+    vanLeer_minmod = 6
+    MC_minmod = 7
