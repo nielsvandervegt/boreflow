@@ -82,7 +82,6 @@ class FVM:
         # Time stepping
         t = 0.0
         while t < self.t_end:
-
             # CFL to determine dt
             max_speed = np.maximum(self.compute_max_velocity(U), 1e-8)
             dt = np.min([self.cfl * self.dx / max_speed, self.max_dt])
@@ -123,7 +122,6 @@ class FVM:
             pbar.close()
 
     def compute_rhs(self, t: float, U: np.ndarray, limiter: Limiter, flux: Flux):
-
         # 1) Add boundary conditions
         _h, _u = self.bc_left.get_flow(t).T[0]
         U[:, 0] = np.array([_h, _h * _u])
@@ -159,7 +157,6 @@ class FVM:
 
         # Apply limiter at each interface (2, ..., N-1)
         for i in range(len(U)):
-
             # Calculate r
             dL = U[i, 1:-1] - U[i, :-2]
             dR = U[i, 2:] - U[i, 1:-1]
@@ -175,13 +172,9 @@ class FVM:
 
                 case Limiter.MC:
                     phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
-                
+
                 case Limiter.MC_minmod:
-                    phi = np.where(
-                        U[0, 1:-1] < 0.01,
-                        np.maximum(0, np.minimum(r, 1)),
-                        np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
-                    )
+                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2))))
 
                 case Limiter.minmod:
                     phi = np.maximum(0, np.minimum(r, 1))
@@ -194,13 +187,9 @@ class FVM:
 
                 case Limiter.vanLeer:
                     phi = (r + np.abs(r)) / (1 + np.abs(r))
-                
+
                 case Limiter.vanLeer_minmod:
-                    phi = np.where(
-                        U[0, 1:-1] < 0.01,
-                        np.maximum(0, np.minimum(r, 1)),
-                        (r + np.abs(r)) / (1 + np.abs(r))
-                    )
+                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), (r + np.abs(r)) / (1 + np.abs(r)))
 
                 case _:
                     raise NotImplementedError()
@@ -243,14 +232,8 @@ class FVM:
         sR = np.max([uL * np.cos(alphaL) + cL, uR * np.cos(alphaR) + cR, 0])
 
         # Left and right flux
-        FL = np.array([
-            hL * uL * np.cos(alphaL), 
-            (hL * uL**2 + 0.5 * self.g * hL**2 * np.cos(alphaL)**2) * np.cos(alphaL)
-        ])
-        FR = np.array([
-            hR * uR * np.cos(alphaR), 
-            (hR * uR**2 + 0.5 * self.g * hR**2 * np.cos(alphaR)**2) * np.cos(alphaR)
-        ])
+        FL = np.array([hL * uL * np.cos(alphaL), (hL * uL**2 + 0.5 * self.g * hL**2 * np.cos(alphaL) ** 2) * np.cos(alphaL)])
+        FR = np.array([hR * uR * np.cos(alphaR), (hR * uR**2 + 0.5 * self.g * hR**2 * np.cos(alphaR) ** 2) * np.cos(alphaR)])
 
         # Rusanov Flux
         if flux == Flux.Rusanov:
@@ -265,7 +248,7 @@ class FVM:
                 return FR
             else:
                 return (sR * FL - sL * FR + sL * sR * (UR - UL)) / (sR - sL)
-        
+
         # Unknown
         else:
             raise NotImplementedError("Unknown Flux")
@@ -277,7 +260,6 @@ class FVM:
         # Calculate Source Terms (Momentum only)
         source_term = np.zeros((2, self.nx + 2))
         for i in range(1, self.nx + 1):  # Avoid ghost cells
-            
             # Apply dry conditions
             if h[i] <= self.h_wet:
                 source_term[1, i] = 0.0
