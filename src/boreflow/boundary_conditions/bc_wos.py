@@ -24,7 +24,7 @@ class BCWOS(BCBaseOvertopping):
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
 
-    def __init__(self, volume: float, tru_tovt: float = 0.0, trh_tovt: float = 0.0) -> None:
+    def __init__(self, volume: float, tru_tovt: float = 0.0, trh_tovt: float = 0.14) -> None:
         """
         Initialize the boundary condition.
         """
