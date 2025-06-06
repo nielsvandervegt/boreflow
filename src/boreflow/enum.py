@@ -27,10 +27,13 @@ class Flux(Enum):
         Rusanov flux
     HLL : int
         Harten-Lax-van Leer (HLL) flux
+    HLLC : int
+        Harten-Lax-van Leer Contact (HLLC) flux
     """
 
     Rusanov = 0
     HLL = 1
+    HLLC = 2
 
 
 class Limiter(Enum):
@@ -43,6 +46,8 @@ class Limiter(Enum):
         Koren limiter
     MC : int
         Monotonized Central (MC) limiter
+    MC_minmod : int
+        Hybrid Monotonized Central (MC) and minmod limiter with minmod applied to low flow thicknesses (<1cm)
     minmod : int
         Minmod limiter
     superbee : int
@@ -51,6 +56,8 @@ class Limiter(Enum):
         Van Albada symmetric limiter
     vanLeer : int
         Van Leer limiter
+    vanLeer_minmod : int
+        Hybrid Van Leer and minmod limiter with minmod applied to low flow thicknesses (<1cm)
     """
 
     Koren = 0
