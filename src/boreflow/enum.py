@@ -27,13 +27,10 @@ class Flux(Enum):
         Rusanov flux
     HLL : int
         Harten-Lax-van Leer (HLL) flux
-    HLLC : int
-        Harten-Lax-van Leer Contact (HLLC) flux
     """
 
     Rusanov = 0
     HLL = 1
-    HLLC = 2
 
 
 class Limiter(Enum):
