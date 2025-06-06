@@ -14,8 +14,8 @@ def test_simulation():
     _, h, u = results.get_st(10.0)
 
     # Test
-    assert np.isclose(np.max(h), 0.123, atol=0.1)
-    assert np.isclose(np.max(u), 7.246, atol=0.1)
+    assert np.isclose(np.max(h), 0.132, atol=0.1)
+    assert np.isclose(np.max(u), 6.989, atol=0.1)
 
 
 if __name__ == "__main__":

@@ -53,7 +53,7 @@ class Simulation:
         bc: BCBase,
         limiter: Limiter = Limiter.minmod,
         flux: Flux = Flux.HLL,
-        timeintegration: TimeIntegration = TimeIntegration.EF,
+        timeintegration: TimeIntegration = TimeIntegration.RK2,
     ) -> Geometry:
         """
         Run the simulation using the provided geometry, boundary conditions, and solver.
