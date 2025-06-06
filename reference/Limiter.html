@@ -179,6 +179,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="attributes" class="level2 doc-section doc-section-attributes">
 <h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 81%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -198,24 +203,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Monotonized Central (MC) limiter</td>
 </tr>
 <tr class="odd">
+<td>MC_minmod</td>
+<td>int</td>
+<td>Hybrid Monotonized Central (MC) and minmod limiter with minmod applied to low flow thicknesses (&lt;1cm)</td>
+</tr>
+<tr class="even">
 <td>minmod</td>
 <td>int</td>
 <td>Minmod limiter</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>superbee</td>
 <td>int</td>
 <td>Superbee limiter</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>vanAlbada</td>
 <td>int</td>
 <td>Van Albada symmetric limiter</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>vanLeer</td>
 <td>int</td>
 <td>Van Leer limiter</td>
+</tr>
+<tr class="even">
+<td>vanLeer_minmod</td>
+<td>int</td>
+<td>Hybrid Van Leer and minmod limiter with minmod applied to low flow thicknesses (&lt;1cm)</td>
 </tr>
 </tbody>
 </table>

@@ -257,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    bc,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    limiter<span class="op">=</span>Limiter.minmod,</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    flux<span class="op">=</span>Flux.HLL,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    timeintegration<span class="op">=</span>TimeIntegration.EF,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    timeintegration<span class="op">=</span>TimeIntegration.RK2,</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Run the simulation using the provided geometry, boundary conditions, and solver.</p>
 <p>The simulation involves discretizing the geometry, applying the Finite Volume Method (FVM), and computing the wetting front velocity for each geometry part. The simulation runs until the end time is reached or the conditions specified by the solver are satisfied.</p>
@@ -267,7 +267,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <colgroup>
 <col style="width: 11%">
 <col style="width: 11%">
-<col style="width: 61%">
+<col style="width: 60%">
 <col style="width: 15%">
 </colgroup>
 <thead>
@@ -307,7 +307,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>timeintegration</td>
 <td>TimeIntegration</td>
 <td>Time integration scheme to use in the simulation. The default is <code>TimeIntegration.EF</code>.</td>
-<td><code>TimeIntegration.EF</code></td>
+<td><code>TimeIntegration.RK2</code></td>
 </tr>
 </tbody>
 </table>
