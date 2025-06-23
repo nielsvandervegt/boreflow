@@ -1,7 +1,7 @@
 from .bc_base import BCBaseOvertopping
 
 
-class BCWOSMillingen(BCBaseOvertopping):
+class BCWOSFD(BCBaseOvertopping):
     """
     Boundary condition for overtopping flow, based on fit observed at the first
     measurement location and the temporal flow profile of Hughes et al. (2012).
@@ -32,9 +32,9 @@ class BCWOSMillingen(BCBaseOvertopping):
         self.volume = volume
         self.tru_tovt = tru_tovt
         self.trh_tovt = trh_tovt
-        self.u_peak = 4.415 * volume**0.241
-        self.h_peak = 0.165 * volume**0.482
-        self.t_ovt = 3.876 * volume**0.337
+        self.u_peak = 4.758 * volume**0.192
+        self.h_peak = 0.117 * volume**0.483
+        self.t_ovt = 4.385 * volume**0.394
 
         # Optimize flow
         self.coef = self.optimize_flow()

@@ -215,7 +215,7 @@ class Geometry:
         Returns:
         -------
         np.ndarray
-            Numpy 2D array with [hpeak, upeak]
+            Numpy 2D array with [hpeak, upeak, qpeak]
         """
         # Check if this geometry part is simulated
         if not self.simulated:
@@ -225,5 +225,6 @@ class Geometry:
         _h = self.h_s if get_h_perpendicular else self.h
         _hpeak = np.quantile(_h, quantile, axis=0)
         _upeak = np.quantile(self.u, quantile, axis=0)
+        _qpeak = np.quantile(self.u * _h, quantile, axis=0)
 
-        return np.array([_hpeak, _upeak])
+        return np.array([_hpeak, _upeak, _qpeak])

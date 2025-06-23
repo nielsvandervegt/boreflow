@@ -17,14 +17,14 @@ class BCWOS(BCBaseOvertopping):
     t_ovt : float
         The total time of the overtopping event
     tru_tovt : float
-        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.02)
     trh_tovt : float
-        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.08)
     coef : float
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
 
-    def __init__(self, volume: float, tru_tovt: float = 0.0, trh_tovt: float = 0.14) -> None:
+    def __init__(self, volume: float, tru_tovt: float = 0.02, trh_tovt: float = 0.08) -> None:
         """
         Initialize the boundary condition.
         """

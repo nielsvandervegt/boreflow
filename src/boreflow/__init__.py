@@ -7,6 +7,7 @@ __version__ = "0.0.4"
 from .boundary_conditions.bc_array import BCArray
 from .boundary_conditions.bc_overtopping import BCOvertopping
 from .boundary_conditions.bc_wos import BCWOS
+from .boundary_conditions.bc_wos_fd import BCWOSFD
 from .boundary_conditions.bc_wos_millingen import BCWOSMillingen
 from .enum import Flux, Limiter, TimeIntegration
 from .geometry import Geometry
