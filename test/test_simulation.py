@@ -11,7 +11,7 @@ def test_simulation():
 
     # Run simulation and at results at s = 10m
     results = sim.run(geometry, bc)
-    _, h, u = results.get_st(10.0)
+    _, h, u, _ = results.get_st(10.0)
 
     # Test
     assert np.isclose(np.max(h), 0.132, atol=0.1)
