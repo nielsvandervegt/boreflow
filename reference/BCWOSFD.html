@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>bcwosmillingen – BoreFlow</title>
+<title>bcwosfd – BoreFlow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -159,13 +159,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#boreflow.BCWOSMillingen" id="toc-boreflow.BCWOSMillingen" class="nav-link active" data-scroll-target="#boreflow.BCWOSMillingen">BCWOSMillingen</a>
+  <li><a href="#boreflow.BCWOSFD" id="toc-boreflow.BCWOSFD" class="nav-link active" data-scroll-target="#boreflow.BCWOSFD">BCWOSFD</a>
   <ul class="collapse">
   <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
-  <li><a href="#boreflow.BCWOSMillingen.get_flow" id="toc-boreflow.BCWOSMillingen.get_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSMillingen.get_flow">get_flow</a></li>
-  <li><a href="#boreflow.BCWOSMillingen.optimize_flow" id="toc-boreflow.BCWOSMillingen.optimize_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSMillingen.optimize_flow">optimize_flow</a></li>
+  <li><a href="#boreflow.BCWOSFD.get_flow" id="toc-boreflow.BCWOSFD.get_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSFD.get_flow">get_flow</a></li>
+  <li><a href="#boreflow.BCWOSFD.optimize_flow" id="toc-boreflow.BCWOSFD.optimize_flow" class="nav-link" data-scroll-target="#boreflow.BCWOSFD.optimize_flow">optimize_flow</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -177,9 +177,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="boreflow.BCWOSMillingen" class="level1">
-<h1>BCWOSMillingen</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen(<span class="va">self</span>, volume, tru_tovt<span class="op">=</span><span class="fl">0.02</span>, trh_tovt<span class="op">=</span><span class="fl">0.08</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="boreflow.BCWOSFD" class="level1">
+<h1>BCWOSFD</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>BCWOSFD(<span class="va">self</span>, volume, tru_tovt<span class="op">=</span><span class="fl">0.02</span>, trh_tovt<span class="op">=</span><span class="fl">0.08</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Boundary condition for overtopping flow, based on fit observed at the first measurement location and the temporal flow profile of Hughes et al.&nbsp;(2012).</p>
 <section id="attributes" class="level2 doc-section doc-section-attributes">
 <h2 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h2>
@@ -246,18 +246,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#boreflow.BCWOSMillingen.get_flow">get_flow</a></td>
+<td><a href="#boreflow.BCWOSFD.get_flow">get_flow</a></td>
 <td>Compute (h, u) for time t based on current or given coef.</td>
 </tr>
 <tr class="even">
-<td><a href="#boreflow.BCWOSMillingen.optimize_flow">optimize_flow</a></td>
+<td><a href="#boreflow.BCWOSFD.optimize_flow">optimize_flow</a></td>
 <td>Optimize coefficient until time series of u(t) and h(t) match the given volume</td>
 </tr>
 </tbody>
 </table>
-<section id="boreflow.BCWOSMillingen.get_flow" class="level3">
-<h3 class="anchored" data-anchor-id="boreflow.BCWOSMillingen.get_flow">get_flow</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen.get_flow(t, coef<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="boreflow.BCWOSFD.get_flow" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.BCWOSFD.get_flow">get_flow</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BCWOSFD.get_flow(t, coef<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Compute (h, u) for time t based on current or given coef.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
@@ -312,9 +312,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 </section>
-<section id="boreflow.BCWOSMillingen.optimize_flow" class="level3">
-<h3 class="anchored" data-anchor-id="boreflow.BCWOSMillingen.optimize_flow">optimize_flow</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>BCWOSMillingen.optimize_flow()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="boreflow.BCWOSFD.optimize_flow" class="level3">
+<h3 class="anchored" data-anchor-id="boreflow.BCWOSFD.optimize_flow">optimize_flow</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>BCWOSFD.optimize_flow()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Optimize coefficient until time series of u(t) and h(t) match the given volume</p>
 <section id="returns-1" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
