@@ -5,7 +5,7 @@ from boreflow import BCWOS, Geometry, Simulation
 
 def test_simulation():
     # Create simulation
-    bc = BCWOS(2.0)
+    bc = BCWOS(2.0, 0.0, 0.0)
     geometry = Geometry([0, 2, 11], [3, 3, 0], [0.0175, 0.0175])
     sim = Simulation(t_end=10.0, cfl=0.2, max_dt=0.01, nx=110)
 
@@ -15,7 +15,7 @@ def test_simulation():
 
     # Test
     assert np.isclose(np.max(h), 0.132, atol=0.1)
-    assert np.isclose(np.max(u), 6.989, atol=0.1)
+    assert np.isclose(np.max(u), 7.265, atol=0.1)
 
 
 if __name__ == "__main__":
