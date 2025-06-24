@@ -24,7 +24,7 @@ class BCWOSMillingen(BCBaseOvertopping):
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
 
-    def __init__(self, volume: float, tru_tovt: float = 0.02, trh_tovt: float = 0.08) -> None:
+    def __init__(self, volume: float, tru_tovt: float = 0.018, trh_tovt: float = 0.066) -> None:
         """
         Initialize the boundary condition.
         """

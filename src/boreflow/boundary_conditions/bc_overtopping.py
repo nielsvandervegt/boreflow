@@ -36,7 +36,7 @@ class BCOvertopping(BCBaseOvertopping):
     cota: float
     unc_ppf: float
 
-    def __init__(self, volume, cota, tru_tovt: float = 0.02, trh_tovt: float = 0.08, unc_ppf: float = 0.5) -> None:
+    def __init__(self, volume, cota, tru_tovt: float = 0.018, trh_tovt: float = 0.066, unc_ppf: float = 0.5) -> None:
         """
         Initialize the boundary condition.
         """
