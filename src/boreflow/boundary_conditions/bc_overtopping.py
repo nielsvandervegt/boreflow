@@ -26,9 +26,9 @@ class BCOvertopping(BCBaseOvertopping):
     t_ovt : float
         The total time of the overtopping event
     tru_tovt : float
-        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.01)
     trh_tovt : float
-        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.07)
     coef : float
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
@@ -36,7 +36,7 @@ class BCOvertopping(BCBaseOvertopping):
     cota: float
     unc_ppf: float
 
-    def __init__(self, volume, cota, tru_tovt: float = 0.018, trh_tovt: float = 0.066, unc_ppf: float = 0.5) -> None:
+    def __init__(self, volume, cota, tru_tovt: float = 0.01, trh_tovt: float = 0.07, unc_ppf: float = 0.5) -> None:
         """
         Initialize the boundary condition.
         """
