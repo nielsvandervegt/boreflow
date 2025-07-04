@@ -32,9 +32,9 @@ class BCWOSMillingen(BCBaseOvertopping):
         self.volume = volume
         self.tru_tovt = tru_tovt
         self.trh_tovt = trh_tovt
-        self.u_peak = 4.415 * volume**0.241
-        self.h_peak = 0.165 * volume**0.482
-        self.t_ovt = 3.876 * volume**0.337
+        self.u_peak = 4.223 * volume**0.275
+        self.h_peak = 0.150 * volume**0.554
+        self.t_ovt = 3.910 * volume**0.235
 
         # Optimize flow
         self.coef = self.optimize_flow()

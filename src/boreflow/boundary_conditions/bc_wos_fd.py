@@ -32,9 +32,9 @@ class BCWOSFD(BCBaseOvertopping):
         self.volume = volume
         self.tru_tovt = tru_tovt
         self.trh_tovt = trh_tovt
-        self.u_peak = 4.758 * volume**0.192
-        self.h_peak = 0.117 * volume**0.486
-        self.t_ovt = 4.384 * volume**0.399
+        self.u_peak = 4.757 * volume**0.189
+        self.h_peak = 0.114 * volume**0.511
+        self.t_ovt = 4.539 * volume**0.412
 
         # Optimize flow
         self.coef = self.optimize_flow()
