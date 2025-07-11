@@ -1,7 +1,7 @@
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 #############################################################
 # boreflow
-# Contact: n.vandervegt@utwente.nl
+# Contact: n.vandervegt@utwente.nl / n.vandervegt@hkv.nl
 #############################################################
 
 from .boundary_conditions.bc_array import BCArray

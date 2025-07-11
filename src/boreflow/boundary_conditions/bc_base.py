@@ -48,9 +48,9 @@ class BCBaseOvertopping(BCBase):
     t_ovt : float
         The total time of the overtopping event
     tru_tovt : float
-        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of upeak and the overtopping time (tovt) (default: 0.01)
     trh_tovt : float
-        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.0)
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.08)
     coef : float
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
@@ -59,8 +59,8 @@ class BCBaseOvertopping(BCBase):
     u_peak: float
     h_peak: float
     t_ovt: float
-    tru_tovt: float = 0.0
-    trh_tovt: float = 0.0
+    tru_tovt: float = 0.01
+    trh_tovt: float = 0.08
     coef: float
 
     @abstractmethod

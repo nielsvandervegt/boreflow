@@ -19,12 +19,12 @@ class BCWOSMillingen(BCBaseOvertopping):
     tru_tovt : float
         Ratio between the time of upeak and the overtopping time (tovt) (default: 0.01)
     trh_tovt : float
-        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.07)
+        Ratio between the time of hpeak and the overtopping time (tovt) (default: 0.08)
     coef : float
         Coefficient optimized such that the integrated u(t) and h(t) equal the given volume
     """
 
-    def __init__(self, volume: float, tru_tovt: float = 0.01, trh_tovt: float = 0.07) -> None:
+    def __init__(self, volume: float, tru_tovt: float = 0.01, trh_tovt: float = 0.08) -> None:
         """
         Initialize the boundary condition.
         """
@@ -34,7 +34,7 @@ class BCWOSMillingen(BCBaseOvertopping):
         self.trh_tovt = trh_tovt
         self.u_peak = 4.223 * volume**0.275
         self.h_peak = 0.150 * volume**0.554
-        self.t_ovt = 3.910 * volume**0.235
+        self.t_ovt = 3.910 * volume**0.236
 
         # Optimize flow
         self.coef = self.optimize_flow()
