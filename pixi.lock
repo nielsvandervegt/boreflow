@@ -788,8 +788,8 @@ packages:
   timestamp: 1713877874618
 - pypi: src
   name: boreflow
-  version: 0.1.1
-  sha256: 311301c23566874bd3544f8259c20015ce779831b0a0cd3d635cd64ff38e37f1
+  version: 0.1.2
+  sha256: b10325d20480528be32b0efdffe5451e8e00abd2f33e492726507cd953fbc315
   requires_dist:
   - numpy
   - scipy

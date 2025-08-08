@@ -127,15 +127,33 @@ class FVM:
         U[:, 0] = np.array([_h, _h * _u])
         U[:, -1] = U[:, -2]
 
-        # 2) Apply limiter to interior cells
-        deltaU = self.limiter(U, limiter)
+        # 1b) Build primitive variables P = [h, u]
+        h = U[0].copy()
+        hu = U[1].copy()
+        u = np.zeros_like(h)
+        mask = h > self.h_wet
+        u[mask] = hu[mask] / h[mask]
+        P = np.vstack([h, u])
+
+        # 2) Apply limiter to primitives (and alpha)
+        deltaP = self.limiter(P, limiter)
         deltaAlpha = self.limiter(np.array([self.alpha_cells]), limiter)[0]
 
-        # 3) Reconstruct fluxes and alpha at left and right of interface
-        UL = U[:, :-1] + 0.5 * deltaU[:, :-1]
-        UR = U[:, 1:] - 0.5 * deltaU[:, 1:]
+        # 3) Reconstruct primitives at left and right of interfaces
+        PL = P[:, :-1] + 0.5 * deltaP[:, :-1]
+        PR = P[:, 1:]  - 0.5 * deltaP[:, 1:]
         alphaL = self.alpha_cells[:-1] + 0.5 * deltaAlpha[:-1]
         alphaR = self.alpha_cells[1:] - 0.5 * deltaAlpha[1:]
+
+        # 3b) Convert reconstructed primitives back to conserved variables UL, UR
+        hL = np.maximum(PL[0], self.h_min)
+        uL = PL[1]
+        hR = np.maximum(PR[0], self.h_min)
+        uR = PR[1]
+        huL = hL * uL
+        huR = hR * uR
+        UL = np.vstack([hL, huL])
+        UR = np.vstack([hR, huR])
 
         # 4) Calculate flux at each interface
         F = np.zeros_like(UL)
@@ -151,20 +169,27 @@ class FVM:
         return rhs
 
     def limiter(self, U: np.ndarray, limiter: Limiter):
-        """"""
         # Init empty deltaU
         deltaU = np.zeros_like(U)
 
-        # Apply limiter at each interface (2, ..., N-1)
-        for i in range(len(U)):
-            # Calculate r
-            dL = U[i, 1:-1] - U[i, :-2]
-            dR = U[i, 2:] - U[i, 1:-1]
-            r = np.zeros_like(dL)
-            mask = dL * dR > 0
-            r[mask] = dL[mask] / dR[mask]
+        eps = 1e-12  # small number to avoid division by zero
 
-            # Apply the right limiter
+        # Apply limiter for each variable separately
+        for i in range(len(U)):
+            # centered differences
+            dL = U[i, 1:-1] - U[i, :-2]
+            dR = U[i, 2:]  - U[i, 1:-1]
+
+            # safe r computation
+            r = np.zeros_like(dL)
+            mask = (dL * dR) > 0
+
+            # denominator protected by eps
+            r_temp = np.zeros_like(dL)
+            r_temp[mask] = dL[mask] / (dR[mask] + eps)
+            r = r_temp
+
+            # phi limiter
             phi = np.zeros_like(dL)
             match limiter:
                 case Limiter.Koren:
@@ -174,7 +199,9 @@ class FVM:
                     phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
 
                 case Limiter.MC_minmod:
-                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2))))
+                    phi = np.where(U[0, 1:-1] < 0.01, 
+                                   np.maximum(0, np.minimum(r, 1)), 
+                                   np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2))))
 
                 case Limiter.minmod:
                     phi = np.maximum(0, np.minimum(r, 1))
@@ -183,17 +210,20 @@ class FVM:
                     phi = np.maximum(0, np.maximum(np.minimum(2 * r, 1), np.minimum(r, 2)))
 
                 case Limiter.vanAlbada:
-                    phi = (r**2 + r) / (r**2 + 1)
+                    phi = (r**2 + r) / (r**2 + 1 + eps)
 
                 case Limiter.vanLeer:
-                    phi = (r + np.abs(r)) / (1 + np.abs(r))
+                    phi = (r + np.abs(r)) / (1 + np.abs(r) + eps)
 
                 case Limiter.vanLeer_minmod:
-                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), (r + np.abs(r)) / (1 + np.abs(r)))
+                    phi = np.where(U[0, 1:-1] < 0.01,
+                                np.maximum(0, np.minimum(r, 1)),
+                                (r + np.abs(r)) / (1 + np.abs(r) + eps))
 
                 case _:
                     raise NotImplementedError()
 
+            # reconstruct slope deltaU = phi * dR (MUSCL)
             deltaU[i, 1:-1] = phi * dR
 
         return deltaU
@@ -274,9 +304,19 @@ class FVM:
 
     def compute_max_velocity(self, U: np.ndarray):
         """"""
-        # Init empty array
-        u = np.zeros_like(U[0])
+        h = U[0]
+        hu = U[1]
 
-        # Avoid division by zero for dry cells
-        u[U[0] > FVM.h_min] = U[1][U[0] > FVM.h_min] / U[0][U[0] > FVM.h_min]
-        return np.max(np.abs(u))
+        # avoid division by zero
+        u = np.zeros_like(h)
+        mask = h > self.h_min
+        u[mask] = hu[mask] / h[mask]
+
+        # local wave speed
+        c = np.sqrt(self.g * np.maximum(h, 0.0))
+
+        # include slope projection
+        alpha = self.alpha_cells
+        speeds = np.abs(u) + c * np.abs(np.cos(alpha))
+
+        return np.max(speeds)
