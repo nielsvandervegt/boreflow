@@ -141,7 +141,7 @@ class FVM:
 
         # 3) Reconstruct primitives at left and right of interfaces
         PL = P[:, :-1] + 0.5 * deltaP[:, :-1]
-        PR = P[:, 1:]  - 0.5 * deltaP[:, 1:]
+        PR = P[:, 1:] - 0.5 * deltaP[:, 1:]
         alphaL = self.alpha_cells[:-1] + 0.5 * deltaAlpha[:-1]
         alphaR = self.alpha_cells[1:] - 0.5 * deltaAlpha[1:]
 
@@ -178,7 +178,7 @@ class FVM:
         for i in range(len(U)):
             # centered differences
             dL = U[i, 1:-1] - U[i, :-2]
-            dR = U[i, 2:]  - U[i, 1:-1]
+            dR = U[i, 2:] - U[i, 1:-1]
 
             # safe r computation
             r = np.zeros_like(dL)
@@ -199,9 +199,7 @@ class FVM:
                     phi = np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2)))
 
                 case Limiter.MC_minmod:
-                    phi = np.where(U[0, 1:-1] < 0.01, 
-                                   np.maximum(0, np.minimum(r, 1)), 
-                                   np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2))))
+                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), np.maximum(0, np.minimum(2 * r, np.minimum(0.5 * (1 + r), 2))))
 
                 case Limiter.minmod:
                     phi = np.maximum(0, np.minimum(r, 1))
@@ -216,9 +214,7 @@ class FVM:
                     phi = (r + np.abs(r)) / (1 + np.abs(r) + eps)
 
                 case Limiter.vanLeer_minmod:
-                    phi = np.where(U[0, 1:-1] < 0.01,
-                                np.maximum(0, np.minimum(r, 1)),
-                                (r + np.abs(r)) / (1 + np.abs(r) + eps))
+                    phi = np.where(U[0, 1:-1] < 0.01, np.maximum(0, np.minimum(r, 1)), (r + np.abs(r)) / (1 + np.abs(r) + eps))
 
                 case _:
                     raise NotImplementedError()
