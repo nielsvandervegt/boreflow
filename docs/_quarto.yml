@@ -8,6 +8,7 @@ website:
       - text: "Examples"
         menu:
           - examples/notebooks/basic_example.ipynb
+          - examples/notebooks/wave_overtopping.ipynb
       - text: "Python API"
         file: reference/index.qmd
     right:
