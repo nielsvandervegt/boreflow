@@ -10,7 +10,7 @@ packages = ["boreflow"]
 
 [project]
 name = "boreflow"
-version = "0.1.2"
+version = "0.1.3"
 description = "Python package to simulate the flow of overtopping and bores."
 readme = "README.md"
 license = {text = "GNU-GPL V3"}
