@@ -61,7 +61,7 @@ class BCOvertopping(BCBaseOvertopping):
         self.h_peak = ch * RuRc * np.exp(qh)
 
         # Overtopping time (Hughes, 2017)
-        self.t_ovt = 15.56 * (volume**0.5 / 9.81)**0.5
+        self.t_ovt = 15.56 * (volume**0.5 / 9.81) ** 0.5
 
         # Fit flow shape (Hughes et al., 2012)
         self.coef = self.optimize_flow()
