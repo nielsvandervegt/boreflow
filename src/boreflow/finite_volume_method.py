@@ -65,6 +65,7 @@ class FVM:
         # Init results
         geometry.t = np.array([])
         geometry.x = self.x_cells[1:-1]
+        geometry.z = self.z_cells[1:-1]
         geometry.s = np.interp(geometry.x, geometry.geometry_x, geometry.geometry_s)
         geometry.u = np.empty((0, self.nx))
         geometry.h = np.empty((0, self.nx))
